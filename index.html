@@ -3,84 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClassPick - 실시간 AI 역량 평가 및 발표 관리</title>
+    <title>ClassPick - AI 과정 중심 평가 및 발표 관리</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts - Inter & Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     
     <!-- MediaPipe Pose AI Engine CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
+<body class="bg-slate-50 text-slate-800 min-h-screen">
 
     <!-- Header -->
-    <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="bg-indigo-600 p-2 rounded-lg text-white font-black tracking-wider text-xl">CP</div>
+    <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="bg-indigo-600 text-white font-extrabold px-3.5 py-1.5 rounded-xl text-lg tracking-wider shadow-md shadow-indigo-600/20">ClassPick</div>
             <div>
-                <h1 class="text-lg font-bold text-white flex items-center gap-2">
-                    ClassPick <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-normal">Teacher Mode</span>
+                <h1 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    대원고등학교 <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span> 1학년 2반
                 </h1>
-                <p class="text-xs text-gray-400">AI 손들기 인식 및 과정 중심 평가 시스템</p>
+                <p class="text-[11px] text-slate-400 font-medium">AI 실시간 수업 참여도 분석 대시보드</p>
             </div>
         </div>
-        <div class="text-sm text-gray-400 flex items-center gap-4">
-            <span><i class="fa-solid fa-school text-indigo-400 mr-1"></i> 대원고등학교 1학년 2반</span>
+        <div class="text-xs text-slate-500 font-medium flex items-center gap-3 bg-slate-100 px-3 py-1.5 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+            <span>로컬 프로세싱 엔진 대기 중</span>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         <!-- Left Column: Front Camera Area with Perspective Seating Grid Overlay -->
-        <section class="lg:col-span-5 bg-gray-800 border border-gray-700/50 rounded-2xl p-4 flex flex-col gap-4">
+        <section class="lg:col-span-5 bg-white border border-slate-200/60 rounded-3xl p-5 flex flex-col gap-4 shadow-sm shadow-slate-100">
             <div class="flex justify-between items-center">
-                <h2 class="text-sm font-semibold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-video text-red-500"></i> AI 웹캠 실시간 감지 (교실 전면)
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-video text-indigo-500"></i> AI 웹캠 실시간 분석
                 </h2>
-                <span class="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded font-mono">
-                    원근 사다리꼴 매핑
+                <span class="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full font-bold">
+                    3D Perspective Calibration
                 </span>
             </div>
 
             <!-- WebCam & Skeleton Overlay -->
-            <div class="relative aspect-video bg-black rounded-xl overflow-hidden border border-gray-900 flex items-center justify-center">
+            <div class="relative aspect-video bg-slate-100 rounded-2xl overflow-hidden border border-slate-200/60 flex items-center justify-center shadow-inner">
                 <!-- Standard HTML5 Video (Hidden, processed by Canvas) -->
                 <video id="webcam" autoplay playsinline muted class="hidden"></video>
-                <!-- Canvas drawing video frames and skeletal lines (No Mirror Class!) -->
+                <!-- Canvas drawing video frames and skeletal lines -->
                 <canvas id="skeletonCanvas" class="w-full h-full"></canvas>
                 
                 <!-- Status Indicators -->
-                <div class="absolute top-3 left-3 bg-black/70 backdrop-blur text-xs text-gray-300 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                    <span id="cameraPulse" class="w-2 h-2 rounded-full bg-gray-600"></span>
-                    <span id="cameraStatusLabel">대기 상태</span>
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-[11px] font-bold text-slate-700 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm border border-slate-100">
+                    <span id="cameraPulse" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span id="cameraStatusLabel">오프라인</span>
                 </div>
 
                 <!-- Camera Access / Loading Status Overlay -->
-                <div id="cameraPrompt" class="absolute inset-0 bg-gray-950/95 flex flex-col items-center justify-center p-6 text-center">
-                    <i id="promptIcon" class="fa-solid fa-camera text-4xl text-indigo-400 mb-3"></i>
-                    <p id="promptTitle" class="font-semibold text-white mb-1">AI 발표 인식기 가동</p>
-                    <p id="promptDesc" class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서 즉시 연산된 후 파기됩니다.</p>
-                    <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
-                        카메라 권한 승인 및 시작
+                <div id="cameraPrompt" class="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center transition-all duration-300">
+                    <div class="bg-indigo-50 p-4 rounded-full text-indigo-600 mb-3 shadow-sm shadow-indigo-100">
+                        <i id="promptIcon" class="fa-solid fa-camera text-2xl"></i>
+                    </div>
+                    <p id="promptTitle" class="font-bold text-slate-800 mb-1">AI 발표 인식기 가동</p>
+                    <p id="promptDesc" class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">개인정보 보호를 위해 영상은 데이터베이스나 외부 서버로 전송되지 않고 즉시 삭제됩니다.</p>
+                    <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
+                        카메라 연결 및 분석 가동
                     </button>
-                    <!-- Loading Progress Info (Hidden initially) -->
-                    <div id="loadingStatus" class="hidden mt-4 w-full max-w-xs bg-gray-900 rounded-lg p-3 text-left border border-gray-800">
-                        <div class="text-[11px] text-gray-400 space-y-1.5" id="statusLogs">
-                            <div><i class="fa-solid fa-circle-notch animate-spin text-indigo-400 mr-1.5"></i> 대기 중...</div>
+                    <!-- Loading Progress Info -->
+                    <div id="loadingStatus" class="hidden mt-4 w-full max-w-xs bg-slate-50 rounded-xl p-3 text-left border border-slate-200/60 shadow-inner">
+                        <div class="text-[10px] text-slate-500 space-y-1" id="statusLogs">
+                            <div><i class="fa-solid fa-circle-notch animate-spin text-indigo-500 mr-1.5"></i> 시스템 대기 중...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- AI Engine Rules Card -->
-            <div class="bg-gray-900/50 rounded-xl p-3 border border-gray-700/30 text-xs text-gray-300 space-y-2">
-                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> 원근 공간 동적 매핑 기술:</p>
-                <ul class="list-disc list-inside space-y-1 text-gray-400 pl-1">
-                    <li>카메라 왜곡을 교정하기 위한 <span class="text-indigo-300 font-bold">사다리꼴 3D 공간 연산 그리드</span>가 내장되어 있습니다 [1].</li>
-                    <li>뒷줄(C행)은 가늘고 촘촘하게, 앞줄(A행)은 넓고 깊게 학생 위치를 지능적으로 역추적합니다 [1].</li>
-                    <li>화면에 띄워진 가이드 글자들은 거울 모드 화면에서도 **정방향**으로 올바르게 보입니다.</li>
-                </ul>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/40 text-xs text-slate-600 space-y-2">
+                <p class="font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> 사다리꼴 원근 격자 설명
+                </p>
+                <p class="text-slate-500 leading-relaxed">
+                    교실 뒷줄(C열)은 화면 상단에 좁게 보이고, 앞줄(A열)은 카메라와 가까워 하단에 넓게 잡힙니다. 본 AI 엔진은 이 원근 왜곡을 물리적으로 역보정하여 학생들의 실제 배치와 실시간 1:1 공간 대조를 완료합니다.
+                </p>
             </div>
         </section>
 
@@ -88,144 +99,141 @@
         <section class="lg:col-span-7 flex flex-col gap-6">
             
             <!-- Mobile Control Panel / Quick Triggers -->
-            <div class="bg-gray-800 border border-gray-700/50 rounded-2xl p-5">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> 수업 제어 및 세션 기록
+            <div class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm shadow-slate-100">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+                        <i class="fa-solid fa-compass text-indigo-500"></i> 수업 제어 패널
                     </h2>
                     <div class="flex gap-2">
-                        <button onclick="startResponseTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all">
-                            <i class="fa-solid fa-play"></i> 질문 시작 (타이머 작동)
+                        <button onclick="startResponseTimer()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-indigo-600/15">
+                            <i class="fa-solid fa-play"></i> 질문 세션 시작
                         </button>
-                        <button onclick="resetTimer()" class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1.5 rounded-lg text-xs transition-all">
-                            타이머 리셋
+                        <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                            리셋
                         </button>
                     </div>
                 </div>
 
                 <!-- Current Active Session / Timer -->
-                <div class="grid grid-cols-3 gap-4 bg-gray-900/70 p-4 rounded-xl border border-gray-800 mb-4">
-                    <div class="text-center border-r border-gray-800">
-                        <span class="text-xs text-gray-400 block mb-1">질문 세션 상태</span>
-                        <span id="sessionStatus" class="text-sm font-bold text-gray-400">
+                <div class="grid grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/40 mb-5">
+                    <div class="text-center border-r border-slate-200">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1">세션 상태</span>
+                        <span id="sessionStatus" class="text-xs font-bold text-slate-500">
                             대기 중
                         </span>
                     </div>
-                    <div class="text-center border-r border-gray-800">
-                        <span class="text-xs text-gray-400 block mb-1">현재 경과 시간</span>
-                        <span id="responseTimer" class="text-lg font-mono font-bold text-indigo-400">0.00초</span>
+                    <div class="text-center border-r border-slate-200">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1">세션 경과</span>
+                        <span id="responseTimer" class="text-base font-mono font-bold text-indigo-600">00:00:00</span>
                     </div>
                     <div class="text-center">
-                        <span class="text-xs text-gray-400 block mb-1">감지 완료 인원</span>
-                        <span id="detectedCount" class="text-sm font-bold text-amber-400">0 / 5 명</span>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1">감지 카운트</span>
+                        <span id="detectedCount" class="text-xs font-bold text-slate-500">0 / 5 명</span>
                     </div>
                 </div>
 
                 <!-- Real-time Ranking Board (Top 5 Display) -->
-                <div class="bg-gray-900/60 border border-gray-700/40 rounded-xl p-3 mb-5">
-                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <i class="fa-solid fa-list-ol text-amber-400"></i> 실시간 선착순 순위 (최대 5명)
+                <div class="bg-slate-50 border border-slate-200/40 rounded-2xl p-4 mb-5">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-ol text-amber-500"></i> 실시간 선착순 명단 (TOP 5)
                     </h4>
-                    <div id="rankingList" class="flex flex-wrap gap-2 py-1">
-                        <span class="text-xs text-gray-500 py-1">질문 시작 후 카메라의 사다리꼴 구역 내부에서 손을 들면 선착순으로 자동 배치됩니다.</span>
+                    <div id="rankingList" class="flex flex-wrap gap-2 min-h-[36px] items-center">
+                        <span class="text-xs text-slate-400 font-medium">질문 시작 후 학생들이 손을 번쩍 들면 실시간 순위와 정밀 타임코드가 기입됩니다.</span>
                     </div>
                 </div>
 
                 <!-- Classroom Grid Area -->
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-1.5">
-                    <i class="fa-solid fa-grid-2"></i> 교실 자리배치 격자 (Grid Area)
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                    <i class="fa-solid fa-grid-2"></i> 교실 좌석 모니터링 배치도
                 </h3>
-                <div class="grid grid-cols-4 gap-3 mb-4" id="classroomGrid">
+                <div class="grid grid-cols-4 gap-3.5 mb-2" id="classroomGrid">
                     <!-- Javascript will dynamically inject classroom seats here -->
                 </div>
-                <p class="text-[11px] text-gray-500 text-center">교탁 방향 (전면 스크린 앞)</p>
             </div>
         </section>
 
         <!-- Evaluation Tag & Data Logging Section (Bottom) -->
-        <section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-800 border border-gray-700/50 rounded-2xl p-6">
+        <section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm shadow-slate-100">
             
             <!-- Quick Tag Input Form -->
-            <div>
-                <h3 class="text-md font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check text-indigo-400"></i> 역량 기반 즉각 평가 및 메모
+            <div class="flex flex-col gap-4">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-fancy text-indigo-500"></i> 역량 중심 즉시 평가 기록
                 </h3>
                 
-                <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800 flex flex-col gap-4">
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/40 flex flex-col gap-4">
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1.5">선택된 발표 학생</label>
-                        <input id="targetStudent" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" readonly placeholder="AI 카메라 감지 목록 혹은 자리 격자를 수동으로 클릭하여 지정해 주세요">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">선택된 발표자</label>
+                        <input id="targetStudent" type="text" class="w-full bg-white border border-slate-200/60 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" readonly placeholder="상단의 AI 선착순 순위표나 교실 자리 버튼을 눌러 지정해 주세요">
                     </div>
                     
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1.5">범용 핵심 역량 평가 태그</label>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="selectTag('창의성')" class="tag-btn bg-gray-800 hover:bg-indigo-600 hover:text-white text-gray-300 border border-gray-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
-                                <i class="fa-solid fa-lightbulb"></i> 창의성
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">핵심 핵심역량 평가 태그</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectTag('창의성')" class="tag-btn bg-white hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-lightbulb text-indigo-500"></i> 창의성
                             </button>
-                            <button onclick="selectTag('의사소통')" class="tag-btn bg-gray-800 hover:bg-emerald-600 hover:text-white text-gray-300 border border-gray-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
-                                <i class="fa-solid fa-comments"></i> 의사소통
+                            <button onclick="selectTag('의사소통')" class="tag-btn bg-white hover:bg-emerald-50 hover:text-emerald-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-comments text-emerald-500"></i> 의사소통
                             </button>
-                            <button onclick="selectTag('문제 해결력')" class="tag-btn bg-gray-800 hover:bg-rose-600 hover:text-white text-gray-300 border border-gray-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
-                                <i class="fa-solid fa-brain"></i> 문제 해결력
+                            <button onclick="selectTag('문제 해결력')" class="tag-btn bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-brain text-rose-500"></i> 문제 해결력
                             </button>
-                            <button onclick="selectTag('협업능력')" class="tag-btn bg-gray-800 hover:bg-amber-600 hover:text-white text-gray-300 border border-gray-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
-                                <i class="fa-solid fa-users"></i> 협업능력
+                            <button onclick="selectTag('협업능력')" class="tag-btn bg-white hover:bg-amber-50 hover:text-amber-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-users text-amber-500"></i> 협업능력
                             </button>
                         </div>
                     </div>
 
                     <div>
-                        <label class="text-xs text-gray-400 block mb-1.5">즉석 관찰 자유 메모</label>
-                        <textarea id="observationMemo" rows="2" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-indigo-500" placeholder="학생의 답변 및 제스처 특징을 기록해 주세요."></textarea>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">즉석 수행 관찰 서술형 메모</label>
+                        <textarea id="observationMemo" rows="2" class="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="학생이 말한 구체적인 서술 특징, 자기주도적 논리 등을 기입해 주세요."></textarea>
                     </div>
 
-                    <div class="flex gap-2">
-                        <button onclick="saveActivityLog()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-floppy-disk"></i> 평가 기록 및 연동
-                        </button>
-                    </div>
+                    <button onclick="saveActivityLog()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-600/15">
+                        <i class="fa-solid fa-floppy-disk"></i> 수행 평가 관찰 데이터 저장 및 동기화
+                    </button>
                 </div>
             </div>
 
             <!-- Dashboard Database Log Table -->
-            <div class="flex flex-col h-full justify-between">
+            <div class="flex flex-col h-full justify-between gap-4">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-md font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-database text-emerald-400"></i> 참여 활동 데이터 (실시간 DB 연동)
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-database text-indigo-500"></i> 학급 실시간 누적 기록부
                         </h3>
-                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-all">
-                            <i class="fa-solid fa-file-excel"></i> Excel(CSV) 다운로드
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-emerald-600/10">
+                            <i class="fa-solid fa-file-excel"></i> 엑셀(CSV) 출력
                         </button>
                     </div>
 
                     <!-- Log Table list -->
-                    <div class="overflow-y-auto max-h-[300px] border border-gray-700/60 rounded-xl bg-gray-900/50">
-                        <table class="w-full text-left text-xs text-gray-300 border-collapse">
-                            <thead class="bg-gray-800/80 sticky top-0 border-b border-gray-700 text-gray-400 font-semibold uppercase">
+                    <div class="overflow-y-auto max-h-[280px] border border-slate-200/60 rounded-2xl bg-slate-50 shadow-inner">
+                        <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                            <thead class="bg-white/80 backdrop-blur-md sticky top-0 border-b border-slate-200/80 text-slate-400 font-bold uppercase text-[10px]">
                                 <tr>
-                                    <th class="p-2.5">학생</th>
-                                    <th class="p-2.5">반응 속도</th>
-                                    <th class="p-2.5">역량 태그</th>
-                                    <th class="p-2.5">관찰 메모</th>
-                                    <th class="p-2.5 text-center">삭제</th>
+                                    <th class="p-3">학생</th>
+                                    <th class="p-3">반응 시간</th>
+                                    <th class="p-3">역량</th>
+                                    <th class="p-3">세부 수행 관찰 메모</th>
+                                    <th class="p-3 text-center">삭제</th>
                                 </tr>
                             </thead>
-                            <tbody id="logTableBody">
-                                <tr id="emptyRow" class="text-center text-gray-500">
-                                    <td colspan="5" class="py-10">아직 수업 평가 로그가 없습니다.<br/>질문을 시작하고 손을 번쩍 들어 보세요!</td>
+                            <tbody id="logTableBody" class="divide-y divide-slate-100">
+                                <tr id="emptyRow" class="text-center text-slate-400">
+                                    <td colspan="5" class="py-16 font-medium">아직 수업 평가 로그가 쌓이지 않았습니다.<br/>수업 제어 패널에서 첫 질문 세션을 진행해 주십시오.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="mt-4 bg-indigo-950/40 p-3.5 border border-indigo-900/30 rounded-xl text-[11px] text-indigo-300">
-                    <p class="font-bold flex items-center gap-1 mb-1">
-                        <i class="fa-solid fa-magic"></i> AI 생기부 연동 TIP
+                <div class="bg-indigo-50/60 p-4 border border-indigo-100/50 rounded-2xl text-[11px] text-slate-500 leading-relaxed shadow-sm">
+                    <p class="font-bold text-indigo-900 flex items-center gap-1 mb-1.5">
+                        <i class="fa-solid fa-magic"></i> AI 생활기록부 문항 자동화 안내
                     </p>
-                    이 로그 테이블은 DB와 실시간 동기화되어 저장됩니다. 학기 말 대시보드에서 축적된 평가 태그 및 밀리초(ms) 반응 속도와 메모를 바탕으로 나이스(NEIS) 입력용 생기부 과세특 초안 문구가 AI로 자동 추천됩니다.
+                    저장된 핵심 역량 태그 정보와 ms 반응 속도 데이터, 실시간 교사 관찰 서술 정보는 학기말 대시보드 데이터 통계 기법과 결합하여 생기부(과세특)에 입력할 수 있는 학업태도 우수자 추천 초안 텍스트로 가공할 수 있습니다 [1].
                 </div>
             </div>
         </section>
@@ -282,61 +290,74 @@
         // 5 Column Boundary points (X ratios) at each corresponding Y Level
         // Perspective effect: getting narrower towards the top of the screen (Back Row C) [1]
         const X_BOUNDS = [
-            [0.25, 0.375, 0.50, 0.625, 0.75], // Level 0 (Y=0.30) - Back Row C boundary
-            [0.18, 0.34,  0.50, 0.66,  0.82], // Level 1 (Y=0.52) - Mid Row C-B boundary
-            [0.08, 0.29,  0.50, 0.71,  0.92], // Level 2 (Y=0.72) - Front Row B-A boundary
-            [0.02, 0.26,  0.50, 0.74,  0.98]  // Level 3 (Y=0.95) - Nearest front edge of A
+            [0.25, 0.375, 0.50, 0.625, 0.75], // Level 0 (Y=0.30) - Back Row C boundary [1]
+            [0.18, 0.34,  0.50, 0.66,  0.82], // Level 1 (Y=0.52) - Mid Row C-B boundary [1]
+            [0.08, 0.29,  0.50, 0.71,  0.92], // Level 2 (Y=0.72) - Front Row B-A boundary [1]
+            [0.02, 0.26,  0.50, 0.74,  0.98]  // Level 3 (Y=0.95) - Nearest front edge of A [1]
         ];
+
+        // ⏱ 정밀 스톱워치 타임코드 포맷터 (Minutes:Seconds:Centiseconds) [1]
+        function formatTime(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            const centiseconds = Math.floor((ms % 1000) / 10);
+            
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+            const cc = String(centiseconds).padStart(2, '0');
+            
+            return `${mm}:${ss}:${cc}`;
+        }
 
         // Custom Console log helper
         function addLog(text, type = 'info') {
             const div = document.createElement('div');
             if (type === 'error') {
-                div.innerHTML = `<span class="text-red-500 font-bold">❌ Error:</span> ${text}`;
+                div.innerHTML = `<span class="text-rose-500 font-bold">❌ Error:</span> ${text}`;
                 console.error(text);
             } else if (type === 'success') {
-                div.innerHTML = `<span class="text-green-400 font-bold">✔ Success:</span> ${text}`;
+                div.innerHTML = `<span class="text-emerald-500 font-bold">✔ Success:</span> ${text}`;
                 console.log(text);
             } else {
-                div.innerHTML = `<span class="text-indigo-400">⏱ Log:</span> ${text}`;
+                div.innerHTML = `<span class="text-indigo-500 font-medium">⏱ Log:</span> ${text}`;
                 console.log(text);
             }
             statusLogs.appendChild(div);
             statusLogs.scrollTop = statusLogs.scrollHeight;
         }
 
-        // Initialize Classroom Grid
+        // Initialize Classroom Grid [1]
         const gridContainer = document.getElementById('classroomGrid');
         function initGrid() {
             gridContainer.innerHTML = '';
             students.forEach(student => {
                 const btn = document.createElement('button');
                 btn.id = `seat-${student.id}`;
-                btn.className = `seat-btn p-4 bg-gray-700/50 hover:bg-indigo-600/30 border border-gray-600 text-center rounded-xl transition-all cursor-pointer flex flex-col justify-between items-center relative h-24 group`;
+                btn.className = `seat-btn p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200/80 text-center rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between items-center relative h-24 group`;
                 btn.onclick = () => selectStudentFromGrid(student);
                 btn.innerHTML = `
-                    <span class="text-[10px] text-gray-400 font-mono absolute top-1.5 left-2">${student.seat}</span>
-                    <span class="text-xs text-gray-500 font-mono absolute top-1.5 right-2">${student.num}번</span>
-                    <span class="text-sm font-bold text-white mt-4 block group-hover:scale-105 transition-transform">${student.name}</span>
-                    <!-- Rank Badge (Initially Hidden) -->
-                    <div class="rank-badge hidden absolute bottom-1.5 right-1.5 bg-amber-500 text-gray-950 font-black text-[10px] px-1.5 py-0.5 rounded shadow-sm"></div>
+                    <span class="text-[9px] text-slate-400 font-semibold absolute top-2 left-2.5">${student.seat}</span>
+                    <span class="text-[9px] text-slate-400 font-semibold absolute top-2 right-2.5">${student.num}번</span>
+                    <span class="text-xs font-bold text-slate-700 mt-5 block group-hover:scale-105 transition-transform">${student.name}</span>
+                    <!-- Rank Badge -->
+                    <div class="rank-badge hidden absolute bottom-2 right-2 bg-amber-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-lg shadow-sm"></div>
                 `;
                 gridContainer.appendChild(btn);
             });
         }
 
-        // Timer logics
+        // Timer logics [1]
         function startResponseTimer() {
             resetTimer();
             isSessionActive = true;
-            document.getElementById('sessionStatus').textContent = "감지 활성화";
-            document.getElementById('sessionStatus').className = "text-sm font-bold text-green-400 flex items-center justify-center gap-1";
+            document.getElementById('sessionStatus').textContent = "실시간 감지 가동";
+            document.getElementById('sessionStatus').className = "text-xs font-bold text-emerald-600 flex items-center justify-center gap-1.5";
             
             startTime = performance.now();
             timerInterval = setInterval(() => {
                 const current = performance.now();
                 elapsedMilliseconds = Math.floor(current - startTime);
-                document.getElementById('responseTimer').textContent = (elapsedMilliseconds / 1000).toFixed(2) + "초";
+                document.getElementById('responseTimer').textContent = formatTime(elapsedMilliseconds);
             }, 10);
         }
 
@@ -351,20 +372,19 @@
         function resetTimer() {
             stopResponseTimer();
             elapsedMilliseconds = 0;
-            document.getElementById('responseTimer').textContent = "0.00초";
-            document.getElementById('responseTimer').className = "text-lg font-mono font-bold text-indigo-400";
+            document.getElementById('responseTimer').textContent = "00:00:00";
+            document.getElementById('responseTimer').className = "text-base font-mono font-bold text-indigo-600";
             document.getElementById('sessionStatus').textContent = "대기 중";
-            document.getElementById('sessionStatus').className = "text-sm font-bold text-gray-400";
+            document.getElementById('sessionStatus').className = "text-xs font-bold text-slate-500";
             document.getElementById('detectedCount').textContent = "0 / 5 명";
             
             handRaisedStartTime = null;
             sessionRankings = [];
             currentActiveSeatCode = null;
             
-            // UI elements reset
             updateRankingUI();
             document.querySelectorAll('.seat-btn').forEach(b => {
-                b.classList.remove('border-amber-400', 'bg-amber-400/20', 'ring-2', 'ring-indigo-500');
+                b.className = `seat-btn p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200/80 text-center rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between items-center relative h-24 group`;
                 const badge = b.querySelector('.rank-badge');
                 if (badge) badge.classList.add('hidden');
             });
@@ -377,7 +397,7 @@
             statusLogs.innerHTML = '';
 
             // Step 1: Camera Access
-            addLog("카메라 권한 획득 시작...");
+            addLog("카메라 미디어 승인 시도 중...");
             try {
                 const constraints = {
                     video: {
@@ -398,19 +418,19 @@
                 });
                 
                 isCameraStreamActive = true;
-                addLog("카메라 하드웨어 연결 성공.", "success");
+                addLog("웹캠 기기 바인딩 완료.", "success");
             } catch (err) {
-                addLog(`카메라 연동 실패: ${err.name}`, "error");
-                document.getElementById('promptIcon').className = "fa-solid fa-triangle-exclamation text-4xl text-red-500 mb-3 animate-pulse";
-                document.getElementById('promptTitle').textContent = "카메라 연동 불가";
+                addLog(`카메라 차단 상태 감지: ${err.name}`, "error");
+                document.getElementById('promptIcon').className = "fa-solid fa-triangle-exclamation text-2xl text-rose-500";
+                document.getElementById('promptTitle').textContent = "웹캠 연결 실패";
                 document.getElementById('promptDesc').innerHTML = `
-                    브라우저 주소창 왼쪽의 <b>🔒 자물쇠 아이콘</b>을 눌러 카메라 권한을 '허용'한 후 웹페이지를 새로고침해 주십시오.
+                    브라우저 주소 표시줄 좌측의 자물쇠(🔒) 모양 아이콘을 탭하고 카메라 사용 동의 권한을 승인한 뒤 F5 새로고침을 진행해 주십시오.
                 `;
                 return;
             }
 
             // Step 2: Load Pose Engine
-            addLog("MediaPipe Pose AI 모델 로딩 중...");
+            addLog("MediaPipe Pose AI 모델을 마운팅하는 중...");
             try {
                 poseModel = new Pose({
                     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
@@ -424,19 +444,22 @@
                 });
 
                 poseModel.onResults(onPoseResults);
-                addLog("Pose AI 머신러닝 엔진 로딩 완료.", "success");
+                addLog("인공지능 추적 엔진 이니셜라이징 완료.", "success");
             } catch (err) {
-                addLog(`AI 모델 로드 오류: ${err.message}`, "error");
+                addLog(`라이브러리 CDN 전송 링크 오류: ${err.message}`, "error");
                 return;
             }
 
             // Step 3: Start Loop
-            addLog("실시간 추적 프레임 루프 가동...", "success");
-            document.getElementById('cameraPulse').className = "w-2 h-2 rounded-full bg-red-600 animate-ping";
-            document.getElementById('cameraStatusLabel').textContent = "실시간 감지 작동 중";
+            addLog("프레임 파이프라인 분석 스레드 가동...", "success");
+            document.getElementById('cameraPulse').className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
+            document.getElementById('cameraStatusLabel').textContent = "실시간 분석 가동";
             
             setTimeout(() => {
-                document.getElementById('cameraPrompt').style.display = 'none';
+                document.getElementById('cameraPrompt').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('cameraPrompt').style.display = 'none';
+                }, 300);
                 startResponseTimer();
             }, 1000);
 
@@ -462,6 +485,7 @@
             ctx.stroke();
         }
 
+        // Custom Joint drawing
         function drawJoint(ctx, point, radius, color) {
             ctx.beginPath();
             ctx.arc(point.x * canvasElement.width, point.y * canvasElement.height, radius, 0, 2 * Math.PI);
@@ -477,7 +501,7 @@
             ctx.save();
             
             // 1. Draw 4 Horizontal boundaries lines (Trapezoid segments) [1]
-            ctx.strokeStyle = "rgba(99, 102, 241, 0.45)"; // Indigo
+            ctx.strokeStyle = "rgba(99, 102, 241, 0.4)"; // Indigo
             ctx.lineWidth = 1.5;
             for (let i = 0; i < 4; i++) {
                 ctx.beginPath();
@@ -487,8 +511,8 @@
             }
 
             // 2. Draw 5 Vertical Perspective boundaries lines (Converging to Center) [1]
-            ctx.strokeStyle = "rgba(99, 102, 241, 0.35)";
-            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = "rgba(99, 102, 241, 0.2)";
+            ctx.setLineDash([3, 3]);
             for (let j = 0; j < 5; j++) {
                 ctx.beginPath();
                 ctx.moveTo(X_BOUNDS[0][j] * w, Y_LEVELS[0] * h);
@@ -534,7 +558,7 @@
                     ctx.lineTo(pBR.x, pBR.y);
                     ctx.lineTo(pBL.x, pBL.y);
                     ctx.closePath();
-                    ctx.fillStyle = "rgba(245, 158, 11, 0.25)"; // Amber glow
+                    ctx.fillStyle = "rgba(99, 102, 241, 0.15)"; // Indigo soft glow
                     ctx.fill();
                 }
 
@@ -543,10 +567,15 @@
                 const centerY = (pTL.y + pTR.y + pBR.y + pBL.y) / 4;
 
                 // Write labels (Guaranteed upright and non-mirrored!) [1]
-                ctx.fillStyle = isHovered ? "#f59e0b" : "rgba(255, 255, 255, 0.45)";
-                ctx.font = isHovered ? "bold 11px sans-serif" : "9px sans-serif";
+                ctx.fillStyle = isHovered ? "rgba(79, 70, 229, 0.9)" : "rgba(255, 255, 255, 0.85)";
+                ctx.beginPath();
+                ctx.rect(centerX - 35, centerY - 8, 70, 16);
+                ctx.fill();
+
+                ctx.fillStyle = isHovered ? "#ffffff" : "#475569";
+                ctx.font = isHovered ? "bold 10px sans-serif" : "9px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(`${cell.seat} ${cell.name}`, centerX, centerY);
+                ctx.fillText(`${cell.seat} ${cell.name}`, centerX, centerY + 3);
             });
 
             ctx.restore();
@@ -591,28 +620,28 @@
                 const rightElbow = landmarks[14];
 
                 // Draw bones & joints (Aligned with the flipped camera view [1])
-                drawBone(canvasCtx, leftShoulder, rightShoulder, 4, "#6366f1");
-                drawBone(canvasCtx, leftShoulder, leftElbow, 4, "#6366f1");
-                drawBone(canvasCtx, leftElbow, leftWrist, 4, "#6366f1");
-                drawBone(canvasCtx, rightShoulder, rightElbow, 4, "#6366f1");
-                drawBone(canvasCtx, rightElbow, rightWrist, 4, "#6366f1");
+                drawBone(canvasCtx, leftShoulder, rightShoulder, 4, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, leftShoulder, leftElbow, 3, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, leftElbow, leftWrist, 3, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, rightShoulder, rightElbow, 3, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, rightElbow, rightWrist, 3, "rgba(99, 102, 241, 0.85)");
 
                 const criticalPoints = [nose, leftEye, rightEye, leftEar, rightEar, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist];
-                criticalPoints.forEach(p => drawJoint(canvasCtx, p, 5, "#f59e0b"));
+                criticalPoints.forEach(p => drawJoint(canvasCtx, p, 4.5, "#f59e0b"));
 
                 // Calculate screen mirrored coordinates for calibration mapping [1]
                 const shoulderX = (leftShoulder.x + rightShoulder.x) / 2;
                 shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
-                screenX = 1 - shoulderX; // Invert to match mirrored display space (0.0=left, 1.0=right)
+                screenX = 1 - shoulderX; // Invert to match mirrored display space
 
-                // 2. UN-MIRRORED PASS: Restore canvas transform matrix to default to render Text and Calibration Grids upright! [1]
+                // 2. UN-MIRRORED PASS: Restore canvas transform matrix to render Text upright [1]
                 canvasCtx.restore(); 
 
                 // 📐 Perspective Seating Coordinate Mapping [1]
                 let row = -1;
-                if (shoulderY >= Y_LEVELS[0] && shoulderY < Y_LEVELS[1]) row = 0;      // Row C (Far)
-                else if (shoulderY >= Y_LEVELS[1] && shoulderY < Y_LEVELS[2]) row = 1; // Row B (Mid)
-                else if (shoulderY >= Y_LEVELS[2] && shoulderY <= Y_LEVELS[3]) row = 2;// Row A (Near)
+                if (shoulderY >= Y_LEVELS[0] && shoulderY < Y_LEVELS[1]) row = 0;      // Row C (Far) [1]
+                else if (shoulderY >= Y_LEVELS[1] && shoulderY < Y_LEVELS[2]) row = 1; // Row B (Mid) [1]
+                else if (shoulderY >= Y_LEVELS[2] && shoulderY <= Y_LEVELS[3]) row = 2;// Row A (Near) [1]
 
                 let col = -1;
                 if (row !== -1) {
@@ -667,13 +696,13 @@
 
                         // Drawing UI progress bar overlay (Drawn upright and readable!)
                         canvasCtx.save();
+                        canvasCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                        canvasCtx.fillRect(10, 10, 250, 18);
                         canvasCtx.fillStyle = '#10B981';
-                        canvasCtx.fillRect(10, 10, percent * 2.5, 12);
-                        canvasCtx.strokeStyle = '#ffffff';
-                        canvasCtx.strokeRect(10, 10, 250, 12);
-                        canvasCtx.fillStyle = '#ffffff';
-                        canvasCtx.font = "bold 11px sans-serif";
-                        canvasCtx.fillText(`손들기 인식 중 ... ${Math.floor(percent)}%`, 15, 20);
+                        canvasCtx.fillRect(12, 12, percent * 2.46, 14);
+                        canvasCtx.fillStyle = '#1e293b';
+                        canvasCtx.font = "bold 9px sans-serif";
+                        canvasCtx.fillText(`손들기 유지 중 ... ${Math.floor(percent)}%`, 20, 22);
                         canvasCtx.restore();
                     }
                 } else {
@@ -688,14 +717,14 @@
             drawCalibrationGrid(canvasCtx, currentActiveSeatCode);
         }
 
-        // Multi-ranking Hand Raise Trigger (Up to 5 students with exact matching)
+        // Multi-ranking Hand Raise Trigger (Up to 5 students with exact matching) [1]
         function triggerAIHandRaise(detectedStudent) {
             if (sessionRankings.length >= 5) {
                 stopResponseTimer();
                 return;
             }
 
-            // 중복 지목 방지
+            // 중복 지목 방지 [1]
             if (sessionRankings.some(r => r.student.id === detectedStudent.id)) return;
 
             const currentRank = sessionRankings.length + 1;
@@ -711,10 +740,10 @@
             // 해당 학생 자리 격자 시각적 강조 피드백
             const seatBtn = document.getElementById(`seat-${detectedStudent.id}`);
             if (seatBtn) {
-                seatBtn.classList.add('border-amber-400', 'bg-amber-400/20');
+                seatBtn.className = `seat-btn p-4 bg-indigo-50/50 hover:bg-indigo-50 border-2 border-indigo-500 text-center rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between items-center relative h-24 group ring-2 ring-indigo-500/10`;
                 const badge = seatBtn.querySelector('.rank-badge');
                 if (badge) {
-                    badge.textContent = `${currentRank}등 (${(detectionTime / 1000).toFixed(2)}초)`;
+                    badge.textContent = `${currentRank}등 (${formatTime(detectionTime)})`;
                     badge.classList.remove('hidden');
                 }
             }
@@ -724,15 +753,15 @@
 
             if (sessionRankings.length === 5) {
                 stopResponseTimer();
-                document.getElementById('sessionStatus').textContent = "5명 감지 완료!";
-                document.getElementById('sessionStatus').className = "text-sm font-bold text-amber-400 animate-pulse";
+                document.getElementById('sessionStatus').textContent = "5명 감지 완료";
+                document.getElementById('sessionStatus').className = "text-xs font-bold text-amber-600 animate-pulse";
             } else {
                 // 다음 사람 인식을 위해 누적 카운트 지속 연산 초기화
                 handRaisedStartTime = null;
             }
         }
 
-        // Update top-5 rankings UI
+        // Update top-5 rankings UI [1]
         function updateRankingUI() {
             const listContainer = document.getElementById('rankingList');
             const countSpan = document.getElementById('detectedCount');
@@ -740,19 +769,26 @@
             countSpan.textContent = `${sessionRankings.length} / 5 명`;
 
             if (sessionRankings.length === 0) {
-                listContainer.innerHTML = '<span class="text-xs text-gray-500 py-1">질문 시작 후 카메라 격자 구역 안에서 손을 들면 선착순 5명까지 감지되어 기록됩니다.</span>';
+                listContainer.innerHTML = '<span class="text-xs text-slate-400 font-medium">질문 시작 후 카메라의 사다리꼴 구역 내부에서 손을 들면 선착순으로 자동 배치됩니다.</span>';
                 return;
             }
 
             listContainer.innerHTML = '';
             sessionRankings.forEach(item => {
                 const div = document.createElement('div');
-                div.className = "flex items-center gap-2 bg-gray-800 border border-amber-500/40 hover:border-amber-400 rounded-lg px-3 py-1.5 cursor-pointer transition-all active:scale-95";
+                
+                // Color formatting depending on ranks [1]
+                let badgeBg = "bg-slate-200 text-slate-700";
+                if(item.rank === 1) badgeBg = "bg-amber-500 text-white";
+                if(item.rank === 2) badgeBg = "bg-slate-400 text-white";
+                if(item.rank === 3) badgeBg = "bg-amber-700 text-white";
+
+                div.className = "flex items-center gap-2 bg-white border border-slate-200 hover:border-indigo-400 rounded-xl px-3.5 py-2 cursor-pointer transition-all active:scale-95 shadow-sm";
                 div.onclick = () => selectStudentFromGrid(item.student);
                 div.innerHTML = `
-                    <span class="bg-amber-500 text-gray-950 font-black text-[10px] px-1.5 py-0.5 rounded">${item.rank}등</span>
-                    <span class="text-xs font-bold text-white">${item.student.name}</span>
-                    <span class="text-[10px] text-gray-400 font-mono">${(item.time/1000).toFixed(2)}초</span>
+                    <span class="${badgeBg} font-black text-[9px] px-2 py-0.5 rounded-md">${item.rank}등</span>
+                    <span class="text-xs font-bold text-slate-700">${item.student.name}</span>
+                    <span class="text-[9px] text-slate-400 font-mono font-bold">${formatTime(item.time)}</span>
                 `;
                 listContainer.appendChild(div);
             });
@@ -766,36 +802,35 @@
             selectedStudent = student;
             
             const rankedRecord = sessionRankings.find(r => r.student.id === student.id);
-            const timeInfo = rankedRecord ? `[${rankedRecord.rank}등 / ${(rankedRecord.time/1000).toFixed(2)}초]` : `[수동 선택]`;
+            const timeInfo = rankedRecord ? `${rankedRecord.rank}등 / ${formatTime(rankedRecord.time)}` : `수동 지정`;
             
-            document.getElementById('targetStudent').value = `${student.seat} ${student.name} (${student.num}번) - ${timeInfo}`;
+            document.getElementById('targetStudent').value = `${student.seat}열 ${student.name} (${student.num}번) - [${timeInfo}]`;
             
             document.querySelectorAll('.seat-btn').forEach(b => {
-                b.classList.remove('ring-2', 'ring-indigo-500');
+                b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
             });
-            document.getElementById(`seat-${student.id}`).classList.add('ring-2', 'ring-indigo-500');
+            document.getElementById(`seat-${student.id}`).classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
         }
 
         function selectTag(tagName) {
             selectedTagStr = tagName;
             
             document.querySelectorAll('.tag-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'bg-emerald-600', 'bg-rose-600', 'bg-amber-600', 'text-white');
-                btn.classList.add('bg-gray-800', 'text-gray-300');
+                btn.className = "tag-btn bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all";
             });
 
             const eventTarget = Array.from(document.querySelectorAll('.tag-btn')).find(b => b.textContent.includes(tagName));
             if (eventTarget) {
-                eventTarget.classList.remove('bg-gray-800', 'text-gray-300');
-                let bgClass = "bg-indigo-600";
-                if(tagName === '의사소통') bgClass = "bg-emerald-600";
-                if(tagName === '문제 해결력') bgClass = "bg-rose-600";
-                if(tagName === '협업능력') bgClass = "bg-amber-600";
-                eventTarget.classList.add(bgClass, 'text-white');
+                let activeColor = "bg-indigo-600 text-white border-transparent hover:bg-indigo-500";
+                if(tagName === '의사소통') activeColor = "bg-emerald-600 text-white border-transparent hover:bg-emerald-500";
+                if(tagName === '문제 해결력') activeColor = "bg-rose-600 text-white border-transparent hover:bg-rose-500";
+                if(tagName === '협업능력') activeColor = "bg-amber-600 text-white border-transparent hover:bg-amber-500";
+                
+                eventTarget.className = `tag-btn px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm ${activeColor}`;
             }
         }
 
-        // Save activity logs to table
+        // Save activity logs to table [1]
         function saveActivityLog() {
             if (!selectedStudent) {
                 alert("기록을 남기기 전, AI 트리거 작동이나 교실 자리를 눌러 학생을 지목해 주세요.");
@@ -807,7 +842,7 @@
             }
 
             const rankedRecord = sessionRankings.find(r => r.student.id === selectedStudent.id);
-            const displayTime = rankedRecord ? `${rankedRecord.time}ms (${rankedRecord.rank}등)` : "수동 지목";
+            const displayTime = rankedRecord ? `${formatTime(rankedRecord.time)} (${rankedRecord.rank}등)` : "수동 지목";
 
             const memoInput = document.getElementById('observationMemo');
             const newLog = {
@@ -827,12 +862,12 @@
             memoInput.value = "";
             selectedTagStr = "";
             document.querySelectorAll('.tag-btn').forEach(btn => {
-                btn.className = "tag-btn bg-gray-800 hover:bg-indigo-600 hover:text-white text-gray-300 border border-gray-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all";
+                btn.className = "tag-btn bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all";
             });
             
             // Reset grid highlights
             document.querySelectorAll('.seat-btn').forEach(b => {
-                b.classList.remove('ring-2', 'ring-indigo-500');
+                b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
             });
             document.getElementById('targetStudent').value = "";
             selectedStudent = null;
@@ -863,24 +898,24 @@
 
             logs.forEach(log => {
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-gray-800/80 hover:bg-gray-800/30 transition-colors";
+                tr.className = "bg-white hover:bg-slate-50/80 transition-colors";
                 tr.innerHTML = `
-                    <td class="p-2.5">
-                        <div class="font-bold text-white">${log.studentName}</div>
-                        <div class="text-[10px] text-gray-500">${log.seat} / ${log.num}번</div>
+                    <td class="p-3">
+                        <div class="font-bold text-slate-700">${log.studentName}</div>
+                        <div class="text-[9px] text-slate-400 font-bold font-mono">${log.seat} / ${log.num}번</div>
                     </td>
-                    <td class="p-2.5 font-mono text-indigo-400">${log.responseTime}</td>
-                    <td class="p-2.5">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                            log.tag === '창의성' ? 'bg-indigo-500/10 text-indigo-400' :
-                            log.tag === '의사소통' ? 'bg-emerald-500/10 text-emerald-400' :
-                            log.tag === '문제 해결력' ? 'bg-rose-500/10 text-rose-400' :
-                            'bg-amber-500/10 text-amber-400'
+                    <td class="p-3 font-mono font-bold text-indigo-600">${log.responseTime}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold ${
+                            log.tag === '창의성' ? 'bg-indigo-50 text-indigo-600' :
+                            log.tag === '의사소통' ? 'bg-emerald-50 text-emerald-600' :
+                            log.tag === '문제 해결력' ? 'bg-rose-50 text-rose-600' :
+                            'bg-amber-50 text-amber-600'
                         }">${log.tag}</span>
                     </td>
-                    <td class="p-2.5 text-gray-400 max-w-[180px] truncate" title="${log.memo}">${log.memo}</td>
-                    <td class="p-2.5 text-center">
-                        <button onclick="deleteLog(${log.id})" class="text-gray-500 hover:text-red-400 transition-colors">
+                    <td class="p-3 text-slate-500 font-medium max-w-[200px] truncate" title="${log.memo}">${log.memo}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteLog(${log.id})" class="text-slate-400 hover:text-rose-500 transition-colors">
                             <i class="fa-regular fa-trash-can"></i>
                         </button>
                     </td>
