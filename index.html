@@ -22,14 +22,11 @@
                 <h1 class="text-lg font-bold text-white flex items-center gap-2">
                     ClassPick <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-normal">Teacher Mode</span>
                 </h1>
-                <p class="text-xs text-gray-400">AI 손들기 인식 및 과정 중심 평가 시스템 [1]</p>
+                <p class="text-xs text-gray-400">AI 손들기 인식 및 과정 중심 평가 시스템</p>
             </div>
         </div>
         <div class="text-sm text-gray-400 flex items-center gap-4">
-            <span><i class="fa-solid fa-school text-indigo-400 mr-1"></i> 대덕고등학교 1학년 2반</span>
-            <span class="bg-green-500/10 text-green-400 px-2 py-1 rounded text-xs flex items-center gap-1">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Firebase Connected
-            </span>
+            <span><i class="fa-solid fa-school text-indigo-400 mr-1"></i> 대원고등학교 1학년 2반</span>
         </div>
     </header>
 
@@ -39,7 +36,7 @@
         <section class="lg:col-span-5 bg-gray-800 border border-gray-700/50 rounded-2xl p-4 flex flex-col gap-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-sm font-semibold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-video text-red-500"></i> AI 웹캠 실시간 감지 (교실 전면) [1]
+                    <i class="fa-solid fa-video text-red-500"></i> AI 웹캠 실시간 감지 (교실 전면)
                 </h2>
                 <span class="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded font-mono">
                     Local Device (MediaPipe Pose)
@@ -63,7 +60,7 @@
                 <div id="cameraPrompt" class="absolute inset-0 bg-gray-950/95 flex flex-col items-center justify-center p-6 text-center">
                     <i id="promptIcon" class="fa-solid fa-camera text-4xl text-indigo-400 mb-3"></i>
                     <p id="promptTitle" class="font-semibold text-white mb-1">AI 발표 인식기 가동</p>
-                    <p id="promptDesc" class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서 즉시 연산된 후 파기됩니다 [1].</p>
+                    <p id="promptDesc" class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서 즉시 연산된 후 파기됩니다.</p>
                     <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
                         카메라 권한 승인 및 시작
                     </button>
@@ -78,10 +75,10 @@
 
             <!-- AI Engine Rules Card -->
             <div class="bg-gray-900/50 rounded-xl p-3 border border-gray-700/30 text-xs text-gray-300 space-y-2">
-                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> AI 손들기 판정 알고리즘 스펙 (업데이트):</p>
+                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> AI 손들기 판정 알고리즘 스펙:</p>
                 <ul class="list-disc list-inside space-y-1 text-gray-400 pl-1">
                     <li><span class="text-indigo-300 font-bold">손목(Wrist) 위치가 눈(Eye) 좌표보다 높은 위치</span>에 있을 때 감지</li>
-                    <li>불필요한 노이즈 행동 필터링을 위해 위 동작 조건을 연속 <span class="text-amber-400 font-bold">0.5초</span> 이상 유지 시 발표자 지정 [1]</li>
+                    <li>불필요한 노이즈 행동 필터링을 위해 위 동작 조건을 연속 <span class="text-amber-400 font-bold">0.5초</span> 이상 유지 시 발표자 지정</li>
                 </ul>
             </div>
         </section>
@@ -89,11 +86,11 @@
         <!-- Right Column: Teacher Dashboard & Remote Controller -->
         <section class="lg:col-span-7 flex flex-col gap-6">
             
-            <!-- Mobile Control Panel / Quick Triggers [1] -->
+            <!-- Mobile Control Panel / Quick Triggers -->
             <div class="bg-gray-800 border border-gray-700/50 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> 수업 제어 및 세션 기록 [1]
+                        <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> 수업 제어 및 세션 기록
                     </h2>
                     <div class="flex gap-2">
                         <button onclick="startResponseTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all">
@@ -106,7 +103,7 @@
                 </div>
 
                 <!-- Current Active Session / Timer -->
-                <div class="grid grid-cols-3 gap-4 bg-gray-900/70 p-4 rounded-xl border border-gray-800 mb-5">
+                <div class="grid grid-cols-3 gap-4 bg-gray-900/70 p-4 rounded-xl border border-gray-800 mb-4">
                     <div class="text-center border-r border-gray-800">
                         <span class="text-xs text-gray-400 block mb-1">질문 세션 상태</span>
                         <span id="sessionStatus" class="text-sm font-bold text-gray-400">
@@ -118,14 +115,24 @@
                         <span id="responseTimer" class="text-lg font-mono font-bold text-indigo-400">0.00초</span>
                     </div>
                     <div class="text-center">
-                        <span class="text-xs text-gray-400 block mb-1">AI 인식 발표자</span>
-                        <span id="detectedStudentName" class="text-sm font-bold text-amber-400">없음</span>
+                        <span class="text-xs text-gray-400 block mb-1">감지 완료 인원</span>
+                        <span id="detectedCount" class="text-sm font-bold text-amber-400">0 / 5 명</span>
                     </div>
                 </div>
 
-                <!-- Classroom Grid Area [1] -->
+                <!-- Real-time Ranking Board (Top 5 Display) -->
+                <div class="bg-gray-900/60 border border-gray-700/40 rounded-xl p-3 mb-5">
+                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-ol text-amber-400"></i> 실시간 선착순 순위 (최대 5명)
+                    </h4>
+                    <div id="rankingList" class="flex flex-wrap gap-2 py-1">
+                        <span class="text-xs text-gray-500 py-1">질문 시작 후 카메라 앞에서 손을 들면 선착순 5명까지 감지되어 기록됩니다.</span>
+                    </div>
+                </div>
+
+                <!-- Classroom Grid Area -->
                 <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-1.5">
-                    <i class="fa-solid fa-grid-2"></i> 교실 자리배치 격자 (Grid Area) [1]
+                    <i class="fa-solid fa-grid-2"></i> 교실 자리배치 격자 (Grid Area)
                 </h3>
                 <div class="grid grid-cols-4 gap-3 mb-4" id="classroomGrid">
                     <!-- Javascript will dynamically inject classroom seats here -->
@@ -137,16 +144,16 @@
         <!-- Evaluation Tag & Data Logging Section (Bottom) -->
         <section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-800 border border-gray-700/50 rounded-2xl p-6">
             
-            <!-- Quick Tag Input Form [1] -->
+            <!-- Quick Tag Input Form -->
             <div>
                 <h3 class="text-md font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check text-indigo-400"></i> 역량 기반 즉각 평가 및 메모 [1]
+                    <i class="fa-solid fa-circle-check text-indigo-400"></i> 역량 기반 즉각 평가 및 메모
                 </h3>
                 
                 <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800 flex flex-col gap-4">
                     <div>
                         <label class="text-xs text-gray-400 block mb-1.5">선택된 발표 학생</label>
-                        <input id="targetStudent" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" readonly placeholder="AI 카메라 감지 혹은 자리 격자를 수동으로 클릭하여 지정해 주세요 [1]">
+                        <input id="targetStudent" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" readonly placeholder="AI 카메라 감지 목록 혹은 자리 격자를 수동으로 클릭하여 지정해 주세요">
                     </div>
                     
                     <div>
@@ -188,7 +195,7 @@
                             <i class="fa-solid fa-database text-emerald-400"></i> 참여 활동 데이터 (실시간 DB 연동)
                         </h3>
                         <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-all">
-                            <i class="fa-solid fa-file-excel"></i> Excel(CSV) 다운로드 [1]
+                            <i class="fa-solid fa-file-excel"></i> Excel(CSV) 다운로드
                         </button>
                     </div>
 
@@ -215,7 +222,7 @@
 
                 <div class="mt-4 bg-indigo-950/40 p-3.5 border border-indigo-900/30 rounded-xl text-[11px] text-indigo-300">
                     <p class="font-bold flex items-center gap-1 mb-1">
-                        <i class="fa-solid fa-magic"></i> AI 생기부 연동 TIP [1]
+                        <i class="fa-solid fa-magic"></i> AI 생기부 연동 TIP
                     </p>
                     이 로그 테이블은 DB와 실시간 동기화되어 저장됩니다 [1]. 학기 말 대시보드에서 축적된 평가 태그 및 밀리초(ms) 반응 속도와 메모를 바탕으로 나이스(NEIS) 입력용 생기부 과세특 초안 문구가 AI로 자동 추천됩니다 [1].
                 </div>
@@ -249,6 +256,8 @@
         let elapsedMilliseconds = 0;
         let isSessionActive = false;
         
+        // Multi-ranking States
+        let sessionRankings = []; // Stores up to 5 elements: { rank, student, time }
         let logs = [];
 
         // UI & Console DOMs
@@ -258,7 +267,7 @@
         const statusLogs = document.getElementById('statusLogs');
 
         let handRaisedStartTime = null;
-        const DURATION_THRESHOLD = 500; // 0.5초(500ms) 유지 조건 [1]
+        const DURATION_THRESHOLD = 500; // 0.5초(500ms) 유지 조건
         let poseModel = null;
         let isCameraStreamActive = false;
 
@@ -279,7 +288,7 @@
             statusLogs.scrollTop = statusLogs.scrollHeight;
         }
 
-        // Initialize Classroom Grid [1]
+        // Initialize Classroom Grid
         const gridContainer = document.getElementById('classroomGrid');
         function initGrid() {
             gridContainer.innerHTML = '';
@@ -292,15 +301,14 @@
                     <span class="text-[10px] text-gray-400 font-mono absolute top-1.5 left-2">${student.seat}</span>
                     <span class="text-xs text-gray-500 font-mono absolute top-1.5 right-2">${student.num}번</span>
                     <span class="text-sm font-bold text-white mt-4 block group-hover:scale-105 transition-transform">${student.name}</span>
-                    <div class="hand-indicator hidden absolute bottom-1.5 right-2 text-amber-400 animate-bounce">
-                        <i class="fa-solid fa-hand"></i>
-                    </div>
+                    <!-- Rank Badge (Initially Hidden) -->
+                    <div class="rank-badge hidden absolute bottom-1.5 right-1.5 bg-amber-500 text-gray-950 font-black text-[10px] px-1.5 py-0.5 rounded shadow-sm"></div>
                 `;
                 gridContainer.appendChild(btn);
             });
         }
 
-        // Timer logics [1]
+        // Timer logics
         function startResponseTimer() {
             resetTimer();
             isSessionActive = true;
@@ -315,6 +323,7 @@
             }, 10);
         }
 
+        // Stop Response Timer
         function stopResponseTimer() {
             if (timerInterval) {
                 clearInterval(timerInterval);
@@ -330,7 +339,18 @@
             document.getElementById('responseTimer').className = "text-lg font-mono font-bold text-indigo-400";
             document.getElementById('sessionStatus').textContent = "대기 중";
             document.getElementById('sessionStatus').className = "text-sm font-bold text-gray-400";
+            document.getElementById('detectedCount').textContent = "0 / 5 명";
+            
             handRaisedStartTime = null;
+            sessionRankings = [];
+            
+            // UI elements reset
+            updateRankingUI();
+            document.querySelectorAll('.seat-btn').forEach(b => {
+                b.classList.remove('border-amber-400', 'bg-amber-400/20', 'ring-2', 'ring-indigo-500');
+                const badge = b.querySelector('.rank-badge');
+                if (badge) badge.classList.add('hidden');
+            });
         }
 
         // Camera and AI Initialization
@@ -446,15 +466,12 @@
             if (results.poseLandmarks) {
                 const landmarks = results.poseLandmarks;
 
-                // 2번: 왼쪽 눈 (Left Eye), 5번: 오른쪽 눈 (Right Eye) 추출
+                // Key landmarks
                 const leftEye = landmarks[2];
                 const rightEye = landmarks[5];
-
-                // 15번: 왼쪽 손목 (Left Wrist), 16번: 오른쪽 손목 (Right Wrist) 추출
                 const leftWrist = landmarks[15];
                 const rightWrist = landmarks[16];
 
-                // 뼈대 및 관절 드로잉용 참조 포인트들
                 const nose = landmarks[0];
                 const leftEar = landmarks[7];
                 const rightEar = landmarks[8];
@@ -463,18 +480,18 @@
                 const leftElbow = landmarks[13];
                 const rightElbow = landmarks[14];
 
-                // 머리 및 팔 프레임 그리기
+                // Draw lines
                 drawBone(canvasCtx, leftShoulder, rightShoulder, 4, "#6366f1");
                 drawBone(canvasCtx, leftShoulder, leftElbow, 4, "#6366f1");
                 drawBone(canvasCtx, leftElbow, leftWrist, 4, "#6366f1");
                 drawBone(canvasCtx, rightShoulder, rightElbow, 4, "#6366f1");
                 drawBone(canvasCtx, rightElbow, rightWrist, 4, "#6366f1");
 
-                // 관절 노드 시각화 (눈 포인트도 포함)
+                // Draw joints
                 const criticalPoints = [nose, leftEye, rightEye, leftEar, rightEar, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist];
                 criticalPoints.forEach(p => drawJoint(canvasCtx, p, 5, "#f59e0b"));
 
-                // 핵심 알고리즘 수정 [1]: "손목 위치(Wrist Y)가 각각의 눈 위치(Eye Y)보다 높을(작을) 때"를 기준으로 판단
+                // 핵심 알고리즘: "손 wrist 위치가 눈 eye 위치보다 위에 있을 때"
                 const isLeftHandRaised = leftWrist.y < leftEye.y;
                 const isRightHandRaised = rightWrist.y < rightEye.y;
 
@@ -485,12 +502,12 @@
                         const duration = performance.now() - handRaisedStartTime;
                         const percent = Math.min((duration / DURATION_THRESHOLD) * 100, 100);
                         
-                        // 0.5초(500ms) 유지 조건 체크 [1]
+                        // 0.5초 조건 도달 확인
                         if (duration >= DURATION_THRESHOLD) {
                             triggerAIHandRaise();
                         }
 
-                        // 화면상의 감지 진행 정보 바 표기
+                        // Drawing UI progress bar overlay
                         canvasCtx.fillStyle = '#10B981';
                         canvasCtx.fillRect(10, 10, percent * 2.5, 12);
                         canvasCtx.strokeStyle = '#ffffff';
@@ -506,32 +523,90 @@
             canvasCtx.restore();
         }
 
-        // AI 발표자 선정 트리거
+        // Multi-ranking Hand Raise Trigger (Up to 5 students)
         function triggerAIHandRaise() {
-            stopResponseTimer();
-            document.getElementById('responseTimer').className = "text-lg font-mono font-bold text-amber-400 animate-pulse";
-            document.getElementById('sessionStatus').textContent = "감지 완료!";
-            document.getElementById('sessionStatus').className = "text-sm font-bold text-amber-400";
+            if (sessionRankings.length >= 5) {
+                stopResponseTimer();
+                return;
+            }
 
-            // 임의의 학생 매핑 후 지목 시뮬레이션 [1]
-            const randIndex = Math.floor(Math.random() * students.length);
-            const target = students[randIndex];
-            
-            document.querySelectorAll('.seat-btn').forEach(b => {
-                b.classList.remove('border-amber-400', 'bg-amber-400/20');
-                b.querySelector('.hand-indicator').classList.add('hidden');
+            // 중복 지목 방지 필터링
+            const availableStudents = students.filter(s => !sessionRankings.some(r => r.student.id === s.id));
+            if (availableStudents.length === 0) return;
+
+            const randIndex = Math.floor(Math.random() * availableStudents.length);
+            const target = availableStudents[randIndex];
+            const currentRank = sessionRankings.length + 1;
+            const detectionTime = elapsedMilliseconds;
+
+            // 순위 배열 추가
+            sessionRankings.push({
+                rank: currentRank,
+                student: target,
+                time: detectionTime
             });
-            const seatBtn = document.getElementById(`seat-${target.id}`);
-            seatBtn.classList.add('border-amber-400', 'bg-amber-400/20');
-            seatBtn.querySelector('.hand-indicator').classList.remove('hidden');
 
-            document.getElementById('detectedStudentName').textContent = target.name;
-            selectStudentFromGrid(target);
+            // 해당 학생 자리 격자 시각적 강조 피드백
+            const seatBtn = document.getElementById(`seat-${target.id}`);
+            if (seatBtn) {
+                seatBtn.classList.add('border-amber-400', 'bg-amber-400/20');
+                const badge = seatBtn.querySelector('.rank-badge');
+                if (badge) {
+                    badge.textContent = `${currentRank}등 (${(detectionTime / 1000).toFixed(2)}초)`;
+                    badge.classList.remove('hidden');
+                }
+            }
+
+            // 실시간 상단 순위 대시보드 UI 업데이트
+            updateRankingUI();
+
+            if (sessionRankings.length === 5) {
+                stopResponseTimer();
+                document.getElementById('sessionStatus').textContent = "5명 감지 완료!";
+                document.getElementById('sessionStatus').className = "text-sm font-bold text-amber-400 animate-pulse";
+            } else {
+                // 다음 사람 인식을 위해 누적 카운트 지속 연산 초기화
+                handRaisedStartTime = null;
+            }
+        }
+
+        // Update top-5 rankings UI
+        function updateRankingUI() {
+            const listContainer = document.getElementById('rankingList');
+            const countSpan = document.getElementById('detectedCount');
+
+            countSpan.textContent = `${sessionRankings.length} / 5 명`;
+
+            if (sessionRankings.length === 0) {
+                listContainer.innerHTML = '<span class="text-xs text-gray-500 py-1">질문 시작 후 카메라 앞에서 손을 들면 선착순 5명까지 감지되어 기록됩니다.</span>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            sessionRankings.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 bg-gray-800 border border-amber-500/40 hover:border-amber-400 rounded-lg px-3 py-1.5 cursor-pointer transition-all active:scale-95";
+                div.onclick = () => selectStudentFromGrid(item.student);
+                div.innerHTML = `
+                    <span class="bg-amber-500 text-gray-950 font-black text-[10px] px-1.5 py-0.5 rounded">${item.rank}등</span>
+                    <span class="text-xs font-bold text-white">${item.student.name}</span>
+                    <span class="text-[10px] text-gray-400 font-mono">${(item.time/1000).toFixed(2)}초</span>
+                `;
+                listContainer.appendChild(div);
+            });
+
+            // 가장 최근에 감지된 학생을 교사가 빠른 그레이딩을 할 수 있도록 대상 지정
+            const latest = sessionRankings[sessionRankings.length - 1];
+            selectStudentFromGrid(latest.student);
         }
 
         function selectStudentFromGrid(student) {
             selectedStudent = student;
-            document.getElementById('targetStudent').value = `${student.seat} ${student.name} (${student.num}번)`;
+            
+            const rankedRecord = sessionRankings.find(r => r.student.id === student.id);
+            const timeInfo = rankedRecord ? `[${rankedRecord.rank}등 / ${(rankedRecord.time/1000).toFixed(2)}초]` : `[수동 선택]`;
+            
+            document.getElementById('targetStudent').value = `${student.seat} ${student.name} (${student.num}번) - ${timeInfo}`;
             
             document.querySelectorAll('.seat-btn').forEach(b => {
                 b.classList.remove('ring-2', 'ring-indigo-500');
@@ -558,7 +633,7 @@
             }
         }
 
-        // 로그 기록 동기화 시뮬레이션 [1]
+        // Save activity logs to table
         function saveActivityLog() {
             if (!selectedStudent) {
                 alert("기록을 남기기 전, AI 트리거 작동이나 교실 자리를 눌러 학생을 지목해 주세요.");
@@ -569,35 +644,36 @@
                 return;
             }
 
+            const rankedRecord = sessionRankings.find(r => r.student.id === selectedStudent.id);
+            const displayTime = rankedRecord ? `${rankedRecord.time}ms (${rankedRecord.rank}등)` : "수동 지목";
+
             const memoInput = document.getElementById('observationMemo');
             const newLog = {
                 id: Date.now(),
                 studentName: selectedStudent.name,
                 seat: selectedStudent.seat,
                 num: selectedStudent.num,
-                responseTime: elapsedMilliseconds > 0 ? `${elapsedMilliseconds}ms` : "수동 선택",
+                responseTime: displayTime,
                 tag: selectedTagStr,
-                memo: memoInput.value || "수업 질문에 대해 적극적으로 손을 들고 의견을 제시함."
+                memo: memoInput.value || "수업 질문에 대해 적극적으로 참여하고 고유한 논리로 답변을 성실히 이끌어냄."
             };
 
             logs.unshift(newLog);
             updateLogTable();
             
-            // 초기화
+            // Clear evaluation states
             memoInput.value = "";
             selectedTagStr = "";
             document.querySelectorAll('.tag-btn').forEach(btn => {
                 btn.className = "tag-btn bg-gray-800 hover:bg-indigo-600 hover:text-white text-gray-300 border border-gray-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all";
             });
+            
+            // Reset grid highlights
             document.querySelectorAll('.seat-btn').forEach(b => {
-                b.classList.remove('border-amber-400', 'bg-amber-400/20', 'ring-2', 'ring-indigo-500');
-                b.querySelector('.hand-indicator').classList.add('hidden');
+                b.classList.remove('ring-2', 'ring-indigo-500');
             });
-            document.getElementById('detectedStudentName').textContent = "없음";
             document.getElementById('targetStudent').value = "";
             selectedStudent = null;
-            
-            resetTimer();
         }
 
         function deleteLog(id) {
