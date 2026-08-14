@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +26,7 @@
     <!-- Google Fonts - Inter & Pretendard -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     
-    <!-- MediaPipe Pose AI Engine -->
+    <!-- MediaPipe Pose AI Engine CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 
     <style>
@@ -34,14 +49,14 @@
             </div>
         </div>
         <div class="text-xs text-slate-500 font-medium flex items-center gap-3 bg-slate-100 px-3 py-1.5 rounded-full">
-            <span id="engineStatus" class="w-2 h-2 rounded-full bg-slate-400"></span>
-            <span id="engineLabel">로컬 프로세싱 엔진 대기 중</span>
+            <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+            <span>로컬 프로세싱 엔진 대기 중</span>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Left Column: Front Camera Area -->
+        <!-- Left Column: Front Camera Area with Perspective Seating Grid Overlay -->
         <section class="lg:col-span-5 bg-white border border-slate-200/60 rounded-3xl p-5 flex flex-col gap-4 shadow-sm shadow-slate-100">
             <div class="flex justify-between items-center">
                 <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
@@ -52,42 +67,53 @@
                 </span>
             </div>
 
+            <!-- WebCam & Skeleton Overlay -->
             <div class="relative aspect-video bg-slate-100 rounded-2xl overflow-hidden border border-slate-200/60 flex items-center justify-center shadow-inner">
+                <!-- Standard HTML5 Video (Hidden, processed by Canvas) -->
                 <video id="webcam" autoplay playsinline muted class="hidden"></video>
+                <!-- Canvas drawing video frames and skeletal lines -->
                 <canvas id="skeletonCanvas" class="w-full h-full"></canvas>
                 
+                <!-- Status Indicators -->
                 <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-[11px] font-bold text-slate-700 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm border border-slate-100">
                     <span id="cameraPulse" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                     <span id="cameraStatusLabel">오프라인</span>
                 </div>
 
+                <!-- Camera Access / Loading Status Overlay -->
                 <div id="cameraPrompt" class="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center transition-all duration-300">
                     <div class="bg-indigo-50 p-4 rounded-full text-indigo-600 mb-3 shadow-sm shadow-indigo-100">
                         <i id="promptIcon" class="fa-solid fa-camera text-2xl"></i>
                     </div>
                     <p id="promptTitle" class="font-bold text-slate-800 mb-1">AI 발표 인식기 가동</p>
-                    <p id="promptDesc" class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">개인정보 보호를 위해 영상은 데이터베이스나 외부 서버로 전송되지 않고 즉시 파기됩니다 [1].</p>
+                    <p id="promptDesc" class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">개인정보 보호를 위해 영상은 데이터베이스나 외부 서버로 전송되지 않고 즉시 삭제됩니다.</p>
                     <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
                         카메라 연결 및 분석 가동
                     </button>
+                    <!-- Loading Progress Info -->
                     <div id="loadingStatus" class="hidden mt-4 w-full max-w-xs bg-slate-50 rounded-xl p-3 text-left border border-slate-200/60 shadow-inner">
-                        <div class="text-[10px] text-slate-500 space-y-1" id="statusLogs"></div>
+                        <div class="text-[10px] text-slate-500 space-y-1" id="statusLogs">
+                            <div><i class="fa-solid fa-circle-notch animate-spin text-indigo-500 mr-1.5"></i> 시스템 대기 중...</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- AI Engine Rules Card -->
             <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/40 text-xs text-slate-600 space-y-2">
                 <p class="font-bold text-slate-700 flex items-center gap-1.5">
-                    <i class="fa-solid fa-lightbulb text-amber-500"></i> 고심도 원근 교정 시스템
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> 사다리꼴 원근 격자 설명
                 </p>
                 <p class="text-slate-500 leading-relaxed">
-                    교실의 맨 앞 분단부터 맨 뒷 분단까지 원근 왜곡을 물리 좌표 평면으로 확장 설계했습니다 [1]. 손을 들면 해당 구역의 학생이 **주황색 하이라이트**로 강조됩니다.
+                    교실 뒷줄(C열)은 화면 상단에 좁게 보이고, 앞줄(A열)은 카메라와 가까워 하단에 넓게 잡힙니다. 본 AI 엔진은 이 원근 왜곡을 물리적으로 역보정하여 학생들의 실제 배치와 실시간 1:1 공간 대조를 완료합니다.
                 </p>
             </div>
         </section>
 
-        <!-- Right Column: Control Panel -->
+        <!-- Right Column: Teacher Dashboard & Remote Controller -->
         <section class="lg:col-span-7 flex flex-col gap-6">
+            
+            <!-- Mobile Control Panel / Quick Triggers -->
             <div class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm shadow-slate-100">
                 <div class="flex justify-between items-center mb-5">
                     <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
@@ -95,22 +121,21 @@
                     </h2>
                     <div class="flex gap-2">
                         <button onclick="startResponseTimer()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-indigo-600/15">
-                            <i class="fa-solid fa-play"></i> 질문 시작
+                            <i class="fa-solid fa-play"></i> 질문 세션 시작
                         </button>
-                        <!-- Added Stop Button [1] -->
-                        <button onclick="stopResponseTimer()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-rose-600/15">
-                            <i class="fa-solid fa-stop"></i> 정지
-                        </button>
-                        <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition-all ml-1">
+                        <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition-all">
                             리셋
                         </button>
                     </div>
                 </div>
 
+                <!-- Current Active Session / Timer -->
                 <div class="grid grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/40 mb-5">
                     <div class="text-center border-r border-slate-200">
                         <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1">세션 상태</span>
-                        <span id="sessionStatus" class="text-xs font-bold text-slate-500">대기 중</span>
+                        <span id="sessionStatus" class="text-xs font-bold text-slate-500">
+                            대기 중
+                        </span>
                     </div>
                     <div class="text-center border-r border-slate-200">
                         <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1">세션 경과</span>
@@ -122,285 +147,832 @@
                     </div>
                 </div>
 
+                <!-- Real-time Ranking Board (Top 5 Display) -->
                 <div class="bg-slate-50 border border-slate-200/40 rounded-2xl p-4 mb-5">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                         <i class="fa-solid fa-list-ol text-amber-500"></i> 실시간 선착순 명단 (TOP 5)
                     </h4>
                     <div id="rankingList" class="flex flex-wrap gap-2 min-h-[36px] items-center">
-                        <span class="text-xs text-slate-400 font-medium">질문 시작 후 학생들이 손을 들면 실시간 순위와 정밀 타임코드가 기입됩니다.</span>
+                        <span class="text-xs text-slate-400 font-medium">질문 시작 후 학생들이 손을 번쩍 들면 실시간 순위와 정밀 타임코드가 기입됩니다.</span>
                     </div>
                 </div>
 
+                <!-- Classroom Grid Area -->
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
                     <i class="fa-solid fa-grid-2"></i> 교실 좌석 모니터링 배치도
                 </h3>
-                <div class="grid grid-cols-4 gap-3.5 mb-2" id="classroomGrid"></div>
+                <div class="grid grid-cols-4 gap-3.5 mb-2" id="classroomGrid">
+                    <!-- Javascript will dynamically inject classroom seats here -->
+                </div>
             </div>
         </section>
 
         <!-- Evaluation Tag & Data Logging Section (Bottom) -->
         <section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm shadow-slate-100">
+            
+            <!-- Quick Tag Input Form -->
             <div class="flex flex-col gap-4">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-pen-fancy text-indigo-500"></i> 역량 중심 즉시 평가 기록</h3>
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-fancy text-indigo-500"></i> 역량 중심 즉시 평가 기록
+                </h3>
+                
                 <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/40 flex flex-col gap-4">
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 block mb-1.5 uppercase">선택된 발표자</label>
-                        <input id="targetStudent" type="text" class="w-full bg-white border border-slate-200/60 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-bold" readonly placeholder="순위표나 교실 자리 버튼을 눌러 지정해 주세요">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">선택된 발표자</label>
+                        <input id="targetStudent" type="text" class="w-full bg-white border border-slate-200/60 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" readonly placeholder="상단의 AI 선착순 순위표나 교실 자리 버튼을 눌러 지정해 주세요">
                     </div>
+                    
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 block mb-1.5 uppercase">핵심 역량 태그</label>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">핵심 핵심역량 평가 태그</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="selectTag('창의성')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">창의성</button>
-                            <button onclick="selectTag('의사소통')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">의사소통</button>
-                            <button onclick="selectTag('문제 해결력')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">문제 해결력</button>
-                            <button onclick="selectTag('협업능력')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">협업능력</button>
+                            <button onclick="selectTag('창의성')" class="tag-btn bg-white hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-lightbulb text-indigo-500"></i> 창의성
+                            </button>
+                            <button onclick="selectTag('의사소통')" class="tag-btn bg-white hover:bg-emerald-50 hover:text-emerald-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-comments text-emerald-500"></i> 의사소통
+                            </button>
+                            <button onclick="selectTag('문제 해결력')" class="tag-btn bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-brain text-rose-500"></i> 문제 해결력
+                            </button>
+                            <button onclick="selectTag('협업능력')" class="tag-btn bg-white hover:bg-amber-50 hover:text-amber-600 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-solid fa-users text-amber-500"></i> 협업능력
+                            </button>
                         </div>
                     </div>
+
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 block mb-1.5 uppercase">관찰 메모</label>
-                        <textarea id="observationMemo" rows="2" class="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-xs text-slate-700" placeholder="학생의 답변 특징을 기입해 주세요."></textarea>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">즉석 수행 관찰 서술형 메모</label>
+                        <textarea id="observationMemo" rows="2" class="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="학생이 말한 구체적인 서술 특징, 자기주도적 논리 등을 기입해 주세요."></textarea>
                     </div>
-                    <button onclick="saveActivityLog()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-sm shadow-indigo-600/15">저장 및 동기화</button>
+
+                    <button onclick="saveActivityLog()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-600/15">
+                        <i class="fa-solid fa-floppy-disk"></i> 수행 평가 관찰 데이터 저장 및 동기화
+                    </button>
                 </div>
             </div>
+
+            <!-- Dashboard Database Log Table -->
             <div class="flex flex-col h-full justify-between gap-4">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-database text-indigo-500"></i> 학급 누적 기록부</h3>
-                        <button onclick="exportToCSV()" class="bg-emerald-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i> 엑셀 출력</button>
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-database text-indigo-500"></i> 학급 실시간 누적 기록부
+                        </h3>
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-emerald-600/10">
+                            <i class="fa-solid fa-file-excel"></i> 엑셀(CSV) 출력
+                        </button>
                     </div>
+
+                    <!-- Log Table list -->
                     <div class="overflow-y-auto max-h-[280px] border border-slate-200/60 rounded-2xl bg-slate-50 shadow-inner">
                         <table class="w-full text-left text-xs text-slate-600 border-collapse">
-                            <thead class="bg-white/80 sticky top-0 border-b border-slate-200/80 text-slate-400 font-bold uppercase text-[10px]">
-                                <tr><th class="p-3">학생</th><th class="p-3">반응 시간</th><th class="p-3">역량</th><th class="p-3">관찰 메모</th><th class="p-3 text-center">삭제</th></tr>
+                            <thead class="bg-white/80 backdrop-blur-md sticky top-0 border-b border-slate-200/80 text-slate-400 font-bold uppercase text-[10px]">
+                                <tr>
+                                    <th class="p-3">학생</th>
+                                    <th class="p-3">반응 시간</th>
+                                    <th class="p-3">역량</th>
+                                    <th class="p-3">세부 수행 관찰 메모</th>
+                                    <th class="p-3 text-center">삭제</th>
+                                </tr>
                             </thead>
                             <tbody id="logTableBody" class="divide-y divide-slate-100">
-                                <tr id="emptyRow" class="text-center text-slate-400"><td colspan="5" class="py-16">기록이 없습니다.</td></tr>
+                                <tr id="emptyRow" class="text-center text-slate-400">
+                                    <td colspan="5" class="py-16 font-medium">아직 수업 평가 로그가 쌓이지 않았습니다.<br/>수업 제어 패널에서 첫 질문 세션을 진행해 주십시오.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="bg-indigo-50/60 p-4 border border-indigo-100/50 rounded-2xl text-[11px] text-slate-500">
-                    AI 생활기록부 문항 자동화 안내: ms 반응 속도 데이터는 학기말 대시보드 통계 기법과 결합됩니다 [1].
+
+                <div class="bg-indigo-50/60 p-4 border border-indigo-100/50 rounded-2xl text-[11px] text-slate-500 leading-relaxed shadow-sm">
+                    <p class="font-bold text-indigo-900 flex items-center gap-1 mb-1.5">
+                        <i class="fa-solid fa-magic"></i> AI 생활기록부 문항 자동화 안내
+                    </p>
+                    저장된 핵심 역량 태그 정보와 ms 반응 속도 데이터, 실시간 교사 관찰 서술 정보는 학기말 대시보드 데이터 통계 기법과 결합하여 생기부(과세특)에 입력할 수 있는 학업태도 우수자 추천 초안 텍스트로 가공할 수 있습니다 [1].
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- UI Interaction logic (Javascript) -->
     <script>
+        // Mock Students Data with Explicit Seat Mapping [1]
         const students = [
-            { id: 1, seat: "A1", num: 1, name: "강도윤" }, { id: 2, seat: "A2", num: 2, name: "김민준" },
-            { id: 3, seat: "A3", num: 3, name: "김서준" }, { id: 4, seat: "A4", num: 4, name: "김예준" },
-            { id: 5, seat: "B1", num: 5, name: "도현우" }, { id: 6, seat: "B2", num: 6, name: "민지아" },
-            { id: 7, seat: "B3", num: 7, name: "박소윤" }, { id: 8, seat: "B4", num: 8, name: "서유진" },
-            { id: 9, seat: "C1", num: 9, name: "이준서" }, { id: 10, seat: "C2", num: 10, name: "임하윤" },
-            { id: 11, seat: "C3", num: 11, name: "장서하" }, { id: 12, seat: "C4", num: 12, name: "한지우" }
+            { id: 1, seat: "A1", num: 1, name: "강도윤" },
+            { id: 2, seat: "A2", num: 2, name: "김민준" },
+            { id: 3, seat: "A3", num: 3, name: "김서준" },
+            { id: 4, seat: "A4", num: 4, name: "김예준" },
+            { id: 5, seat: "B1", num: 5, name: "도현우" },
+            { id: 6, seat: "B2", num: 6, name: "민지아" },
+            { id: 7, seat: "B3", num: 7, name: "박소윤" },
+            { id: 8, seat: "B4", num: 8, name: "서유진" },
+            { id: 9, seat: "C1", num: 9, name: "이준서" },
+            { id: 10, seat: "C2", num: 10, name: "임하윤" },
+            { id: 11, seat: "C3", num: 11, name: "장서하" },
+            { id: 12, seat: "C4", num: 12, name: "한지우" }
         ];
 
-        let selectedStudent = null, selectedTagStr = "", timerInterval = null, startTime = null, elapsedMilliseconds = 0, isSessionActive = false;
-        let sessionRankings = [], logs = [], currentActiveSeatCode = null;
-        let poseModel = null, isCameraStreamActive = false;
-        let handRaisedStartTime = null; const DURATION_THRESHOLD = 500;
+        let selectedStudent = null;
+        let selectedTagStr = "";
+        
+        let timerInterval = null;
+        let startTime = null;
+        let elapsedMilliseconds = 0;
+        let isSessionActive = false;
+        
+        // Multi-ranking States (Max 5)
+        let sessionRankings = []; 
+        let logs = [];
 
-        const Y_LEVELS = [0.22, 0.48, 0.72, 0.96]; 
+        // Current Camera Tracked Coordinates
+        let currentActiveSeatCode = null;
+
+        // UI & Console DOMs
+        const videoElement = document.getElementById('webcam');
+        const canvasElement = document.getElementById('skeletonCanvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        const statusLogs = document.getElementById('statusLogs');
+
+        let handRaisedStartTime = null;
+        const DURATION_THRESHOLD = 500; // 0.5초(500ms) 유지 조건
+        let poseModel = null;
+        let isCameraStreamActive = false;
+
+        // 📐 3D Perspective Quadrilateral Calibration Parameters [1]
+        // 4 Horizontal Boundary lines (Y heights)
+        const Y_LEVELS = [0.30, 0.52, 0.72, 0.95]; 
+        
+        // 5 Column Boundary points (X ratios) at each corresponding Y Level
+        // Perspective effect: getting narrower towards the top of the screen (Back Row C) [1]
         const X_BOUNDS = [
-            [0.32, 0.41, 0.50, 0.59, 0.68], [0.22, 0.36, 0.50, 0.64, 0.78],
-            [0.10, 0.30, 0.50, 0.70, 0.90], [0.01, 0.25, 0.50, 0.75, 0.99]
+            [0.25, 0.375, 0.50, 0.625, 0.75], // Level 0 (Y=0.30) - Back Row C boundary [1]
+            [0.18, 0.34,  0.50, 0.66,  0.82], // Level 1 (Y=0.52) - Mid Row C-B boundary [1]
+            [0.08, 0.29,  0.50, 0.71,  0.92], // Level 2 (Y=0.72) - Front Row B-A boundary [1]
+            [0.02, 0.26,  0.50, 0.74,  0.98]  // Level 3 (Y=0.95) - Nearest front edge of A [1]
         ];
 
+        // ⏱ 정밀 스톱워치 타임코드 포맷터 (Minutes:Seconds:Centiseconds) [1]
         function formatTime(ms) {
-            const min = Math.floor(ms / 60000), sec = Math.floor((ms % 60000) / 1000), cs = Math.floor((ms % 1000) / 10);
-            return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}:${String(cs).padStart(2, '0')}`;
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            const centiseconds = Math.floor((ms % 1000) / 10);
+            
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+            const cc = String(centiseconds).padStart(2, '0');
+            
+            return `${mm}:${ss}:${cc}`;
         }
 
+        // Custom Console log helper
         function addLog(text, type = 'info') {
             const div = document.createElement('div');
-            div.innerHTML = type === 'error' ? `<span class="text-rose-500 font-bold">❌ Error:</span> ${text}` : type === 'success' ? `<span class="text-emerald-500 font-bold">✔ Success:</span> ${text}` : `<span class="text-indigo-500 font-medium">⏱ Log:</span> ${text}`;
-            document.getElementById('statusLogs').appendChild(div);
-            document.getElementById('statusLogs').scrollTop = document.getElementById('statusLogs').scrollHeight;
+            if (type === 'error') {
+                div.innerHTML = `<span class="text-rose-500 font-bold">❌ Error:</span> ${text}`;
+                console.error(text);
+            } else if (type === 'success') {
+                div.innerHTML = `<span class="text-emerald-500 font-bold">✔ Success:</span> ${text}`;
+                console.log(text);
+            } else {
+                div.innerHTML = `<span class="text-indigo-500 font-medium">⏱ Log:</span> ${text}`;
+                console.log(text);
+            }
+            statusLogs.appendChild(div);
+            statusLogs.scrollTop = statusLogs.scrollHeight;
         }
 
-        async function initAISystem() {
-            document.getElementById('loadingStatus').classList.remove('hidden');
-            addLog("카메라 미디어 승인 시도 중...");
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 360 }, audio: false });
-                document.getElementById('webcam').srcObject = stream;
-                await new Promise(r => document.getElementById('webcam').onloadedmetadata = r);
-                isCameraStreamActive = true;
-                
-                poseModel = new Pose({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
-                poseModel.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-                poseModel.onResults(onPoseResults);
-                
-                document.getElementById('engineStatus').className = "w-2 h-2 rounded-full bg-emerald-500";
-                document.getElementById('engineLabel').textContent = "AI 엔진 활성화";
-                document.getElementById('cameraPulse').className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
-                document.getElementById('cameraStatusLabel').textContent = "실시간 분석 중";
-                document.getElementById('cameraPrompt').style.display = 'none';
-                
-                requestAnimationFrame(processVideoFrame);
-            } catch (e) { addLog("연결 실패: " + e.message, "error"); }
-        }
-
-        async function processVideoFrame() {
-            if (isCameraStreamActive && !document.getElementById('webcam').paused) await poseModel.send({ image: document.getElementById('webcam') });
-            requestAnimationFrame(processVideoFrame);
-        }
-
-        function onPoseResults(results) {
-            const canvas = document.getElementById('skeletonCanvas'), ctx = canvas.getContext('2d');
-            canvas.width = 640; canvas.height = 360;
-            ctx.save(); ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
-            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-            
-            if (results.poseLandmarks) {
-                const lm = results.poseLandmarks;
-                const sx = 1 - (lm[11].x + lm[12].x) / 2, sy = (lm[11].y + lm[12].y) / 2;
-                ctx.restore(); 
-                
-                let r = -1; if (sy >= Y_LEVELS[0] && sy < Y_LEVELS[1]) r = 0; else if (sy >= Y_LEVELS[1] && sy < Y_LEVELS[2]) r = 1; else if (sy >= Y_LEVELS[2] && sy <= Y_LEVELS[3]) r = 2;
-                let c = -1; if (r !== -1) {
-                    const ratio = (sy - Y_LEVELS[r]) / (Y_LEVELS[r+1] - Y_LEVELS[r]), tb = X_BOUNDS[r], bb = X_BOUNDS[r+1];
-                    for (let j = 0; j < 4; j++) {
-                        const left = tb[j] + (bb[j] - tb[j]) * ratio, right = tb[j+1] + (bb[j+1] - tb[j+1]) * ratio;
-                        if (sx >= left && sx < right) { c = j; break; }
-                    }
-                }
-                currentActiveSeatCode = r !== -1 && c !== -1 ? `${['C','B','A'][r]}${[4,3,2,1][c]}` : null;
-
-                if (isSessionActive && (lm[15].y < lm[2].y || lm[16].y < lm[5].y)) {
-                    if (!handRaisedStartTime) handRaisedStartTime = performance.now();
-                    else if (performance.now() - handRaisedStartTime >= DURATION_THRESHOLD) {
-                        const target = students.find(s => s.seat === currentActiveSeatCode);
-                        if (target) triggerAIHandRaise(target);
-                    }
-                    ctx.fillStyle = "rgba(249, 115, 22, 0.8)";
-                    ctx.fillRect(10, 10, ((performance.now() - handRaisedStartTime)/DURATION_THRESHOLD)*200, 10);
-                } else { handRaisedStartTime = null; }
-            } else { ctx.restore(); currentActiveSeatCode = null; }
-            drawCalibrationGrid(ctx, currentActiveSeatCode);
-        }
-
-        function drawCalibrationGrid(ctx, active) {
-            const canvas = document.getElementById('skeletonCanvas'), w = canvas.width, h = canvas.height;
-            const cells = [
-                { seat: "C4", r: 0, c: 0 }, { seat: "C3", r: 0, c: 1 }, { seat: "C2", r: 0, c: 2 }, { seat: "C1", r: 0, c: 3 },
-                { seat: "B4", r: 1, c: 0 }, { seat: "B3", r: 1, c: 1 }, { seat: "B2", r: 1, c: 2 }, { seat: "B1", r: 1, c: 3 },
-                { seat: "A4", r: 2, c: 0 }, { seat: "A3", r: 2, c: 1 }, { seat: "A2", r: 2, c: 2 }, { seat: "A1", r: 2, c: 3 }
-            ];
-            cells.forEach(cell => {
-                const isHover = active === cell.seat;
-                const pTL = { x: X_BOUNDS[cell.r][cell.c] * w, y: Y_LEVELS[cell.r] * h }, pTR = { x: X_BOUNDS[cell.r][cell.c+1] * w, y: Y_LEVELS[cell.r] * h }, pBR = { x: X_BOUNDS[cell.r+1][cell.c+1] * w, y: Y_LEVELS[cell.r+1] * h }, pBL = { x: X_BOUNDS[cell.r+1][cell.c] * w, y: Y_LEVELS[cell.r+1] * h };
-                if (isHover) {
-                    ctx.beginPath(); ctx.moveTo(pTL.x, pTL.y); ctx.lineTo(pTR.x, pTR.y); ctx.lineTo(pBR.x, pBR.y); ctx.lineTo(pBL.x, pBL.y); ctx.closePath();
-                    ctx.fillStyle = "rgba(249, 115, 22, 0.45)"; ctx.fill(); ctx.strokeStyle = "rgba(249, 115, 22, 0.85)"; ctx.stroke();
-                }
-                ctx.fillStyle = isHover ? "rgba(249, 115, 22, 0.95)" : "rgba(255, 255, 255, 0.8)";
-                ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
-                ctx.fillText(cell.seat, (pTL.x + pTR.x + pBR.x + pBL.x)/4, (pTL.y + pTR.y + pBR.y + pBL.y)/4 + 3);
+        // Initialize Classroom Grid [1]
+        const gridContainer = document.getElementById('classroomGrid');
+        function initGrid() {
+            gridContainer.innerHTML = '';
+            students.forEach(student => {
+                const btn = document.createElement('button');
+                btn.id = `seat-${student.id}`;
+                btn.className = `seat-btn p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200/80 text-center rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between items-center relative h-24 group`;
+                btn.onclick = () => selectStudentFromGrid(student);
+                btn.innerHTML = `
+                    <span class="text-[9px] text-slate-400 font-semibold absolute top-2 left-2.5">${student.seat}</span>
+                    <span class="text-[9px] text-slate-400 font-semibold absolute top-2 right-2.5">${student.num}번</span>
+                    <span class="text-xs font-bold text-slate-700 mt-5 block group-hover:scale-105 transition-transform">${student.name}</span>
+                    <!-- Rank Badge -->
+                    <div class="rank-badge hidden absolute bottom-2 right-2 bg-amber-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-lg shadow-sm"></div>
+                `;
+                gridContainer.appendChild(btn);
             });
         }
 
+        // Timer logics [1]
         function startResponseTimer() {
-            resetTimer(); isSessionActive = true;
-            document.getElementById('sessionStatus').textContent = "실시간 감지 중";
-            document.getElementById('sessionStatus').className = "text-xs font-bold text-emerald-600";
+            resetTimer();
+            isSessionActive = true;
+            document.getElementById('sessionStatus').textContent = "실시간 감지 가동";
+            document.getElementById('sessionStatus').className = "text-xs font-bold text-emerald-600 flex items-center justify-center gap-1.5";
+            
             startTime = performance.now();
             timerInterval = setInterval(() => {
-                elapsedMilliseconds = Math.floor(performance.now() - startTime);
+                const current = performance.now();
+                elapsedMilliseconds = Math.floor(current - startTime);
                 document.getElementById('responseTimer').textContent = formatTime(elapsedMilliseconds);
             }, 10);
         }
 
         function stopResponseTimer() {
-            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
             isSessionActive = false;
-            document.getElementById('sessionStatus').textContent = "감지 정지됨";
-            document.getElementById('sessionStatus').className = "text-xs font-bold text-rose-500";
         }
 
         function resetTimer() {
-            stopResponseTimer(); elapsedMilliseconds = 0;
+            stopResponseTimer();
+            elapsedMilliseconds = 0;
             document.getElementById('responseTimer').textContent = "00:00:00";
+            document.getElementById('responseTimer').className = "text-base font-mono font-bold text-indigo-600";
+            document.getElementById('sessionStatus').textContent = "대기 중";
+            document.getElementById('sessionStatus').className = "text-xs font-bold text-slate-500";
             document.getElementById('detectedCount').textContent = "0 / 5 명";
-            sessionRankings = []; initGrid();
-        }
-
-        function triggerAIHandRaise(student) {
-            if (sessionRankings.length >= 5 || sessionRankings.some(r => r.student.id === student.id)) return;
-            const rank = sessionRankings.length + 1;
-            sessionRankings.push({ rank, student, time: elapsedMilliseconds });
-            const btn = document.getElementById(`seat-${student.id}`);
-            btn.className = "seat-btn p-4 bg-orange-50 border-2 border-orange-500 rounded-2xl flex flex-col justify-between items-center relative h-24 ring-2 ring-orange-500/20";
-            const badge = btn.querySelector('.rank-badge');
-            badge.textContent = `${rank}등 (${formatTime(elapsedMilliseconds)})`; badge.classList.remove('hidden');
-            updateRankingUI();
-            if (sessionRankings.length === 5) stopResponseTimer();
+            
             handRaisedStartTime = null;
+            sessionRankings = [];
+            currentActiveSeatCode = null;
+            
+            updateRankingUI();
+            document.querySelectorAll('.seat-btn').forEach(b => {
+                b.className = `seat-btn p-4 bg-slate-50 hover:bg-indigo-50/50 border border-slate-200/80 text-center rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between items-center relative h-24 group`;
+                const badge = b.querySelector('.rank-badge');
+                if (badge) badge.classList.add('hidden');
+            });
         }
 
+        // Camera and AI Initialization
+        async function initAISystem() {
+            document.getElementById('loadingStatus').classList.remove('hidden');
+            document.getElementById('startBtn').style.display = 'none';
+            statusLogs.innerHTML = '';
+
+            // Step 1: Camera Access
+            addLog("카메라 미디어 승인 시도 중...");
+            try {
+                const constraints = {
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 360 },
+                        facingMode: "user"
+                    },
+                    audio: false
+                };
+                
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                videoElement.srcObject = stream;
+                await new Promise((resolve) => {
+                    videoElement.onloadedmetadata = () => {
+                        videoElement.play();
+                        resolve();
+                    };
+                });
+                
+                isCameraStreamActive = true;
+                addLog("웹캠 기기 바인딩 완료.", "success");
+            } catch (err) {
+                addLog(`카메라 차단 상태 감지: ${err.name}`, "error");
+                document.getElementById('promptIcon').className = "fa-solid fa-triangle-exclamation text-2xl text-rose-500";
+                document.getElementById('promptTitle').textContent = "웹캠 연결 실패";
+                document.getElementById('promptDesc').innerHTML = `
+                    브라우저 주소 표시줄 좌측의 자물쇠(🔒) 모양 아이콘을 탭하고 카메라 사용 동의 권한을 승인한 뒤 F5 새로고침을 진행해 주십시오.
+                `;
+                return;
+            }
+
+            // Step 2: Load Pose Engine
+            addLog("MediaPipe Pose AI 모델을 마운팅하는 중...");
+            try {
+                poseModel = new Pose({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+                });
+
+                poseModel.setOptions({
+                    modelComplexity: 1,
+                    smoothLandmarks: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+
+                poseModel.onResults(onPoseResults);
+                addLog("인공지능 추적 엔진 이니셜라이징 완료.", "success");
+            } catch (err) {
+                addLog(`라이브러리 CDN 전송 링크 오류: ${err.message}`, "error");
+                return;
+            }
+
+            // Step 3: Start Loop
+            addLog("프레임 파이프라인 분석 스레드 가동...", "success");
+            document.getElementById('cameraPulse').className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
+            document.getElementById('cameraStatusLabel').textContent = "실시간 분석 가동";
+            
+            setTimeout(() => {
+                document.getElementById('cameraPrompt').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('cameraPrompt').style.display = 'none';
+                }, 300);
+                startResponseTimer();
+            }, 1000);
+
+            requestAnimationFrame(processVideoFrame);
+        }
+
+        async function processVideoFrame() {
+            if (isCameraStreamActive && !videoElement.paused && !videoElement.ended) {
+                try {
+                    await poseModel.send({ image: videoElement });
+                } catch (err) {}
+            }
+            requestAnimationFrame(processVideoFrame);
+        }
+
+        // Custom Skeletal drawing tools
+        function drawBone(ctx, p1, p2, width, color) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x * canvasElement.width, p1.y * canvasElement.height);
+            ctx.lineTo(p2.x * canvasElement.width, p2.y * canvasElement.height);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke();
+        }
+
+        // Custom Joint drawing
+        function drawJoint(ctx, point, radius, color) {
+            ctx.beginPath();
+            ctx.arc(point.x * canvasElement.width, point.y * canvasElement.height, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        // 📐 Draw Perspective Trapezoidal Grid on top of the webcam canvas (Drawn upright and mirrored-safe!) [1]
+        function drawCalibrationGrid(ctx, activeSeat) {
+            const w = canvasElement.width;
+            const h = canvasElement.height;
+
+            ctx.save();
+            
+            // 1. Draw 4 Horizontal boundaries lines (Trapezoid segments) [1]
+            ctx.strokeStyle = "rgba(99, 102, 241, 0.4)"; // Indigo
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(X_BOUNDS[i][0] * w, Y_LEVELS[i] * h);
+                ctx.lineTo(X_BOUNDS[i][4] * w, Y_LEVELS[i] * h);
+                ctx.stroke();
+            }
+
+            // 2. Draw 5 Vertical Perspective boundaries lines (Converging to Center) [1]
+            ctx.strokeStyle = "rgba(99, 102, 241, 0.2)";
+            ctx.setLineDash([3, 3]);
+            for (let j = 0; j < 5; j++) {
+                ctx.beginPath();
+                ctx.moveTo(X_BOUNDS[0][j] * w, Y_LEVELS[0] * h);
+                for (let i = 1; i < 4; i++) {
+                    ctx.lineTo(X_BOUNDS[i][j] * w, Y_LEVELS[i] * h);
+                }
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+
+            // 3. Define and draw seating cells [1]
+            const gridLayout = [
+                { seat: "C4", name: "한지우", r: 0, c: 0 },
+                { seat: "C3", name: "장서하", r: 0, c: 1 },
+                { seat: "C2", name: "임하윤", r: 0, c: 2 },
+                { seat: "C1", name: "이준서", r: 0, c: 3 },
+
+                { seat: "B4", name: "서유진", r: 1, c: 0 },
+                { seat: "B3", name: "박소윤", r: 1, c: 1 },
+                { seat: "B2", name: "민지아", r: 1, c: 2 },
+                { seat: "B1", name: "도현우", r: 1, c: 3 },
+
+                { seat: "A4", name: "김예준", r: 2, c: 0 },
+                { seat: "A3", name: "김서준", r: 2, c: 1 },
+                { seat: "A2", name: "김민준", r: 2, c: 2 },
+                { seat: "A1", name: "강도윤", r: 2, c: 3 }
+            ];
+
+            gridLayout.forEach(cell => {
+                const isHovered = activeSeat === cell.seat;
+                
+                // Coordinates for 4 corners of the trapezoid cell [1]
+                const pTL = { x: X_BOUNDS[cell.r][cell.c] * w,     y: Y_LEVELS[cell.r] * h };
+                const pTR = { x: X_BOUNDS[cell.r][cell.c+1] * w,   y: Y_LEVELS[cell.r] * h };
+                const pBR = { x: X_BOUNDS[cell.r+1][cell.c+1] * w, y: Y_LEVELS[cell.r+1] * h };
+                const pBL = { x: X_BOUNDS[cell.r+1][cell.c] * w,   y: Y_LEVELS[cell.r+1] * h };
+
+                // Draw filled highlighting area if active [1]
+                if (isHovered) {
+                    ctx.beginPath();
+                    ctx.moveTo(pTL.x, pTL.y);
+                    ctx.lineTo(pTR.x, pTR.y);
+                    ctx.lineTo(pBR.x, pBR.y);
+                    ctx.lineTo(pBL.x, pBL.y);
+                    ctx.closePath();
+                    ctx.fillStyle = "rgba(99, 102, 241, 0.15)"; // Indigo soft glow
+                    ctx.fill();
+                }
+
+                // Centroid coordinates of the trapezoid cell for label text [1]
+                const centerX = (pTL.x + pTR.x + pBR.x + pBL.x) / 4;
+                const centerY = (pTL.y + pTR.y + pBR.y + pBL.y) / 4;
+
+                // Write labels (Guaranteed upright and non-mirrored!) [1]
+                ctx.fillStyle = isHovered ? "rgba(79, 70, 229, 0.9)" : "rgba(255, 255, 255, 0.85)";
+                ctx.beginPath();
+                ctx.rect(centerX - 35, centerY - 8, 70, 16);
+                ctx.fill();
+
+                ctx.fillStyle = isHovered ? "#ffffff" : "#475569";
+                ctx.font = isHovered ? "bold 10px sans-serif" : "9px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(`${cell.seat} ${cell.name}`, centerX, centerY + 3);
+            });
+
+            ctx.restore();
+        }
+
+        // MediaPipe results processing loop [1]
+        function onPoseResults(results) {
+            canvasElement.width = videoElement.videoWidth || 640;
+            canvasElement.height = videoElement.videoHeight || 360;
+
+            // 1. MIRRORED PASS: Draw flipped camera stream and skeletal bones inside mirror matrix [1]
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            
+            // Mirror flip transformation on the canvas context [1]
+            canvasCtx.translate(canvasElement.width, 0);
+            canvasCtx.scale(-1, 1);
+            
+            // Draw original frame in mirrored state
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            let screenX = 0;
+            let shoulderY = 0;
+            let hasPose = false;
+
+            if (results.poseLandmarks) {
+                const landmarks = results.poseLandmarks;
+                hasPose = true;
+
+                // Key landmarks
+                const leftEye = landmarks[2];
+                const rightEye = landmarks[5];
+                const leftWrist = landmarks[15];
+                const rightWrist = landmarks[16];
+
+                const nose = landmarks[0];
+                const leftEar = landmarks[7];
+                const rightEar = landmarks[8];
+                const leftShoulder = landmarks[11];
+                const rightShoulder = landmarks[12];
+                const leftElbow = landmarks[13];
+                const rightElbow = landmarks[14];
+
+                // Draw bones & joints (Aligned with the flipped camera view [1])
+                drawBone(canvasCtx, leftShoulder, rightShoulder, 4, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, leftShoulder, leftElbow, 3, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, leftElbow, leftWrist, 3, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, rightShoulder, rightElbow, 3, "rgba(99, 102, 241, 0.85)");
+                drawBone(canvasCtx, rightElbow, rightWrist, 3, "rgba(99, 102, 241, 0.85)");
+
+                const criticalPoints = [nose, leftEye, rightEye, leftEar, rightEar, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist];
+                criticalPoints.forEach(p => drawJoint(canvasCtx, p, 4.5, "#f59e0b"));
+
+                // Calculate screen mirrored coordinates for calibration mapping [1]
+                const shoulderX = (leftShoulder.x + rightShoulder.x) / 2;
+                shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
+                screenX = 1 - shoulderX; // Invert to match mirrored display space
+
+                // 2. UN-MIRRORED PASS: Restore canvas transform matrix to render Text upright [1]
+                canvasCtx.restore(); 
+
+                // 📐 Perspective Seating Coordinate Mapping [1]
+                let row = -1;
+                if (shoulderY >= Y_LEVELS[0] && shoulderY < Y_LEVELS[1]) row = 0;      // Row C (Far) [1]
+                else if (shoulderY >= Y_LEVELS[1] && shoulderY < Y_LEVELS[2]) row = 1; // Row B (Mid) [1]
+                else if (shoulderY >= Y_LEVELS[2] && shoulderY <= Y_LEVELS[3]) row = 2;// Row A (Near) [1]
+
+                let col = -1;
+                if (row !== -1) {
+                    const yTop = Y_LEVELS[row];
+                    const yBottom = Y_LEVELS[row + 1];
+                    const ratio = (shoulderY - yTop) / (yBottom - yTop);
+
+                    const xB_top = X_BOUNDS[row];
+                    const xB_bottom = X_BOUNDS[row + 1];
+
+                    // Linear interpolation of the column boundaries at current shoulder height Y [1]
+                    const tempBounds = [];
+                    for (let j = 0; j < 5; j++) {
+                        tempBounds.push(xB_top[j] + (xB_bottom[j] - xB_top[j]) * ratio);
+                    }
+
+                    // Check which perspective sector the student is standing in
+                    for (let c = 0; c < 4; c++) {
+                        if (screenX >= tempBounds[c] && screenX < tempBounds[c+1]) {
+                            col = c;
+                            break;
+                        }
+                    }
+                }
+
+                if (row !== -1 && col !== -1) {
+                    const rowLabels = ['C', 'B', 'A'];
+                    const colLabels = [4, 3, 2, 1]; // Col index 0=4, 1=3, 2=2, 3=1
+                    currentActiveSeatCode = `${rowLabels[row]}${colLabels[col]}`;
+                } else {
+                    currentActiveSeatCode = null;
+                }
+
+                // AI Hand Raising verification (Wrist height vs Eye height) [1]
+                const isLeftHandRaised = leftWrist.y < leftEye.y;
+                const isRightHandRaised = rightWrist.y < rightEye.y;
+
+                if (isSessionActive && (isLeftHandRaised || isRightHandRaised)) {
+                    if (handRaisedStartTime === null) {
+                        handRaisedStartTime = performance.now();
+                    } else {
+                        const duration = performance.now() - handRaisedStartTime;
+                        const percent = Math.min((duration / DURATION_THRESHOLD) * 100, 100);
+                        
+                        // Verification completed after 0.5s [1]
+                        if (duration >= DURATION_THRESHOLD) {
+                            const detectedStudent = students.find(s => s.seat === currentActiveSeatCode);
+                            if (detectedStudent) {
+                                triggerAIHandRaise(detectedStudent);
+                            }
+                        }
+
+                        // Drawing UI progress bar overlay (Drawn upright and readable!)
+                        canvasCtx.save();
+                        canvasCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                        canvasCtx.fillRect(10, 10, 250, 18);
+                        canvasCtx.fillStyle = '#10B981';
+                        canvasCtx.fillRect(12, 12, percent * 2.46, 14);
+                        canvasCtx.fillStyle = '#1e293b';
+                        canvasCtx.font = "bold 9px sans-serif";
+                        canvasCtx.fillText(`손들기 유지 중 ... ${Math.floor(percent)}%`, 20, 22);
+                        canvasCtx.restore();
+                    }
+                } else {
+                    handRaisedStartTime = null;
+                }
+            } else {
+                canvasCtx.restore(); // Safety fallback if no pose landmarks are found
+                currentActiveSeatCode = null;
+            }
+
+            // Draw calibration perspective lines & cell labels upright [1]
+            drawCalibrationGrid(canvasCtx, currentActiveSeatCode);
+        }
+
+        // Multi-ranking Hand Raise Trigger (Up to 5 students with exact matching) [1]
+        function triggerAIHandRaise(detectedStudent) {
+            if (sessionRankings.length >= 5) {
+                stopResponseTimer();
+                return;
+            }
+
+            // 중복 지목 방지 [1]
+            if (sessionRankings.some(r => r.student.id === detectedStudent.id)) return;
+
+            const currentRank = sessionRankings.length + 1;
+            const detectionTime = elapsedMilliseconds;
+
+            // 순위 배열 추가
+            sessionRankings.push({
+                rank: currentRank,
+                student: detectedStudent,
+                time: detectionTime
+            });
+
+            // 해당 학생 자리 격자 시각적 강조 피드백
+            const seatBtn = document.getElementById(`seat-${detectedStudent.id}`);
+            if (seatBtn) {
+                seatBtn.className = `seat-btn p-4 bg-indigo-50/50 hover:bg-indigo-50 border-2 border-indigo-500 text-center rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between items-center relative h-24 group ring-2 ring-indigo-500/10`;
+                const badge = seatBtn.querySelector('.rank-badge');
+                if (badge) {
+                    badge.textContent = `${currentRank}등 (${formatTime(detectionTime)})`;
+                    badge.classList.remove('hidden');
+                }
+            }
+
+            // 실시간 상단 순위 대시보드 UI 업데이트
+            updateRankingUI();
+
+            if (sessionRankings.length === 5) {
+                stopResponseTimer();
+                document.getElementById('sessionStatus').textContent = "5명 감지 완료";
+                document.getElementById('sessionStatus').className = "text-xs font-bold text-amber-600 animate-pulse";
+            } else {
+                // 다음 사람 인식을 위해 누적 카운트 지속 연산 초기화
+                handRaisedStartTime = null;
+            }
+        }
+
+        // Update top-5 rankings UI [1]
         function updateRankingUI() {
-            const list = document.getElementById('rankingList');
-            document.getElementById('detectedCount').textContent = `${sessionRankings.length} / 5 명`;
-            if (!sessionRankings.length) { list.innerHTML = '<span class="text-xs text-slate-400 font-medium">질문 시작 후 손을 들어 보세요.</span>'; return; }
-            list.innerHTML = '';
+            const listContainer = document.getElementById('rankingList');
+            const countSpan = document.getElementById('detectedCount');
+
+            countSpan.textContent = `${sessionRankings.length} / 5 명`;
+
+            if (sessionRankings.length === 0) {
+                listContainer.innerHTML = '<span class="text-xs text-slate-400 font-medium">질문 시작 후 카메라의 사다리꼴 구역 내부에서 손을 들면 선착순으로 자동 배치됩니다.</span>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
             sessionRankings.forEach(item => {
                 const div = document.createElement('div');
-                div.className = "flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3.5 py-2 cursor-pointer shadow-sm";
+                
+                // Color formatting depending on ranks [1]
+                let badgeBg = "bg-slate-200 text-slate-700";
+                if(item.rank === 1) badgeBg = "bg-amber-500 text-white";
+                if(item.rank === 2) badgeBg = "bg-slate-400 text-white";
+                if(item.rank === 3) badgeBg = "bg-amber-700 text-white";
+
+                div.className = "flex items-center gap-2 bg-white border border-slate-200 hover:border-indigo-400 rounded-xl px-3.5 py-2 cursor-pointer transition-all active:scale-95 shadow-sm";
                 div.onclick = () => selectStudentFromGrid(item.student);
-                div.innerHTML = `<span class="bg-orange-500 text-white font-black text-[9px] px-2 py-0.5 rounded-md">${item.rank}등</span><span class="text-xs font-bold text-slate-700">${item.student.name}</span><span class="text-[9px] text-slate-400 font-bold">${formatTime(item.time)}</span>`;
-                list.appendChild(div);
+                div.innerHTML = `
+                    <span class="${badgeBg} font-black text-[9px] px-2 py-0.5 rounded-md">${item.rank}등</span>
+                    <span class="text-xs font-bold text-slate-700">${item.student.name}</span>
+                    <span class="text-[9px] text-slate-400 font-mono font-bold">${formatTime(item.time)}</span>
+                `;
+                listContainer.appendChild(div);
             });
-            selectStudentFromGrid(sessionRankings[sessionRankings.length-1].student);
+
+            // 가장 최근에 감지된 학생을 교사가 빠른 그레이딩을 할 수 있도록 대상 지정
+            const latest = sessionRankings[sessionRankings.length - 1];
+            selectStudentFromGrid(latest.student);
         }
 
         function selectStudentFromGrid(student) {
             selectedStudent = student;
-            const record = sessionRankings.find(r => r.student.id === student.id);
-            document.getElementById('targetStudent').value = `${student.seat}열 ${student.name} (${student.num}번) - [${record ? record.rank+'등' : '수동'}]`;
-            document.querySelectorAll('.seat-btn').forEach(b => b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2'));
+            
+            const rankedRecord = sessionRankings.find(r => r.student.id === student.id);
+            const timeInfo = rankedRecord ? `${rankedRecord.rank}등 / ${formatTime(rankedRecord.time)}` : `수동 지정`;
+            
+            document.getElementById('targetStudent').value = `${student.seat}열 ${student.name} (${student.num}번) - [${timeInfo}]`;
+            
+            document.querySelectorAll('.seat-btn').forEach(b => {
+                b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
+            });
             document.getElementById(`seat-${student.id}`).classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
         }
 
-        function selectTag(t) {
-            selectedTagStr = t;
-            document.querySelectorAll('.tag-btn').forEach(b => b.className = "tag-btn bg-white text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all");
-            const btn = Array.from(document.querySelectorAll('.tag-btn')).find(b => b.textContent.includes(t));
-            if (btn) btn.className = `tag-btn px-3 py-2 rounded-xl text-xs font-bold text-white ${t==='의사소통'?'bg-emerald-600':t==='문제 해결력'?'bg-rose-600':t==='협업능력'?'bg-amber-600':'bg-indigo-600'}`;
+        function selectTag(tagName) {
+            selectedTagStr = tagName;
+            
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.className = "tag-btn bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all";
+            });
+
+            const eventTarget = Array.from(document.querySelectorAll('.tag-btn')).find(b => b.textContent.includes(tagName));
+            if (eventTarget) {
+                let activeColor = "bg-indigo-600 text-white border-transparent hover:bg-indigo-500";
+                if(tagName === '의사소통') activeColor = "bg-emerald-600 text-white border-transparent hover:bg-emerald-500";
+                if(tagName === '문제 해결력') activeColor = "bg-rose-600 text-white border-transparent hover:bg-rose-500";
+                if(tagName === '협업능력') activeColor = "bg-amber-600 text-white border-transparent hover:bg-amber-500";
+                
+                eventTarget.className = `tag-btn px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm ${activeColor}`;
+            }
         }
 
+        // Save activity logs to table [1]
         function saveActivityLog() {
-            if (!selectedStudent || !selectedTagStr) { alert("학생과 태그를 선택해 주세요."); return; }
-            const record = sessionRankings.find(r => r.student.id === selectedStudent.id);
-            logs.unshift({ id: Date.now(), studentName: selectedStudent.name, seat: selectedStudent.seat, num: selectedStudent.num, responseTime: record ? formatTime(record.time) : "수동", tag: selectedTagStr, memo: document.getElementById('observationMemo').value || "성실히 참여함." });
+            if (!selectedStudent) {
+                alert("기록을 남기기 전, AI 트리거 작동이나 교실 자리를 눌러 학생을 지목해 주세요.");
+                return;
+            }
+            if (!selectedTagStr) {
+                alert("평가할 핵심 역량 태그를 하나 이상 선택해 주세요 (예: 창의성, 의사소통, 문제 해결력 등).");
+                return;
+            }
+
+            const rankedRecord = sessionRankings.find(r => r.student.id === selectedStudent.id);
+            const displayTime = rankedRecord ? `${formatTime(rankedRecord.time)} (${rankedRecord.rank}등)` : "수동 지목";
+
+            const memoInput = document.getElementById('observationMemo');
+            const newLog = {
+                id: Date.now(),
+                studentName: selectedStudent.name,
+                seat: selectedStudent.seat,
+                num: selectedStudent.num,
+                responseTime: displayTime,
+                tag: selectedTagStr,
+                memo: memoInput.value || "수업 질문에 대해 적극적으로 참여하고 고유한 논리로 답변을 성실히 이끌어냄."
+            };
+
+            logs.unshift(newLog);
             updateLogTable();
-            document.getElementById('observationMemo').value = ""; selectedTagStr = "";
+            
+            // Clear evaluation states
+            memoInput.value = "";
+            selectedTagStr = "";
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.className = "tag-btn bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all";
+            });
+            
+            // Reset grid highlights
+            document.querySelectorAll('.seat-btn').forEach(b => {
+                b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
+            });
+            document.getElementById('targetStudent').value = "";
+            selectedStudent = null;
+        }
+
+        function deleteLog(id) {
+            logs = logs.filter(log => log.id !== id);
+            updateLogTable();
         }
 
         function updateLogTable() {
-            const body = document.getElementById('logTableBody'); document.getElementById('emptyRow').style.display = logs.length ? 'none' : 'table-row';
-            Array.from(body.children).forEach(r => r.id !== 'emptyRow' && r.remove());
-            logs.forEach(l => {
-                const tr = document.createElement('tr'); tr.className = "bg-white";
-                tr.innerHTML = `<td class="p-3"><b>${l.studentName}</b><div class="text-[9px] text-slate-400">${l.seat}/${l.num}</div></td><td class="p-3 font-mono font-bold text-indigo-600">${l.responseTime}</td><td class="p-3"><span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold bg-slate-100">${l.tag}</span></td><td class="p-3 text-slate-500 max-w-[200px] truncate">${l.memo}</td><td class="p-3 text-center"><button onclick="logs=logs.filter(x=>x.id!=${l.id});updateLogTable();" class="text-slate-400">🗑</button></td>`;
-                body.appendChild(tr);
+            const tableBody = document.getElementById('logTableBody');
+            const emptyRow = document.getElementById('emptyRow');
+
+            if (logs.length === 0) {
+                emptyRow.style.display = 'table-row';
+                Array.from(tableBody.children).forEach(row => {
+                    if (row.id !== 'emptyRow') row.remove();
+                });
+                return;
+            }
+
+            emptyRow.style.display = 'none';
+            
+            Array.from(tableBody.children).forEach(row => {
+                if (row.id !== 'emptyRow') row.remove();
+            });
+
+            logs.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = "bg-white hover:bg-slate-50/80 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="font-bold text-slate-700">${log.studentName}</div>
+                        <div class="text-[9px] text-slate-400 font-bold font-mono">${log.seat} / ${log.num}번</div>
+                    </td>
+                    <td class="p-3 font-mono font-bold text-indigo-600">${log.responseTime}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold ${
+                            log.tag === '창의성' ? 'bg-indigo-50 text-indigo-600' :
+                            log.tag === '의사소통' ? 'bg-emerald-50 text-emerald-600' :
+                            log.tag === '문제 해결력' ? 'bg-rose-50 text-rose-600' :
+                            'bg-amber-50 text-amber-600'
+                        }">${log.tag}</span>
+                    </td>
+                    <td class="p-3 text-slate-500 font-medium max-w-[200px] truncate" title="${log.memo}">${log.memo}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteLog(${log.id})" class="text-slate-400 hover:text-rose-500 transition-colors">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
             });
         }
 
-        function initGrid() {
-            const container = document.getElementById('classroomGrid'); container.innerHTML = '';
-            students.forEach(student => {
-                const btn = document.createElement('button'); btn.id = `seat-${student.id}`;
-                btn.className = "seat-btn p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col justify-between items-center relative h-24";
-                btn.onclick = () => selectStudentFromGrid(student);
-                btn.innerHTML = `<span class="text-[9px] text-slate-400 font-semibold absolute top-2 left-2.5">${student.seat}</span><span class="text-[9px] text-slate-400 font-semibold absolute top-2 right-2.5">${student.num}번</span><span class="text-xs font-bold text-slate-700 mt-5 block">${student.name}</span><div class="rank-badge hidden absolute bottom-2 right-2 bg-orange-600 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-lg shadow-sm"></div>`;
-                container.appendChild(btn);
+        function exportToCSV() {
+            if (logs.length === 0) {
+                alert("출력할 데이터 로그가 없습니다.");
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM
+            csvContent += "학생 이름,자리 코드,번호,반응 시간,역량 평가 태그,관찰 메모\n";
+
+            logs.forEach(log => {
+                const row = `"${log.studentName}","${log.seat}",${log.num},"${log.responseTime}","${log.tag}","${log.memo.replace(/"/g, '""')}"`;
+                csvContent += row + "\n";
             });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `ClassPick_수업데이터_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        window.onload = () => initGrid();
+        window.onload = () => {
+            initGrid();
+        };
     </script>
 </body>
 </html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
