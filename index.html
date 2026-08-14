@@ -32,14 +32,14 @@
 
     <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Left Column: Front Camera Area with Seating Grid Overlay -->
+        <!-- Left Column: Front Camera Area with Perspective Seating Grid Overlay -->
         <section class="lg:col-span-5 bg-gray-800 border border-gray-700/50 rounded-2xl p-4 flex flex-col gap-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-sm font-semibold tracking-wider text-gray-400 uppercase flex items-center gap-2">
                     <i class="fa-solid fa-video text-red-500"></i> AI 웹캠 실시간 감지 (교실 전면)
                 </h2>
                 <span class="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded font-mono">
-                    좌표 매핑 활성화
+                    원근 사다리꼴 매핑
                 </span>
             </div>
 
@@ -47,8 +47,8 @@
             <div class="relative aspect-video bg-black rounded-xl overflow-hidden border border-gray-900 flex items-center justify-center">
                 <!-- Standard HTML5 Video (Hidden, processed by Canvas) -->
                 <video id="webcam" autoplay playsinline muted class="hidden"></video>
-                <!-- Canvas drawing video frames and skeletal lines -->
-                <canvas id="skeletonCanvas" class="w-full h-full scale-x-[-1]"></canvas>
+                <!-- Canvas drawing video frames and skeletal lines (No Mirror Class!) -->
+                <canvas id="skeletonCanvas" class="w-full h-full"></canvas>
                 
                 <!-- Status Indicators -->
                 <div class="absolute top-3 left-3 bg-black/70 backdrop-blur text-xs text-gray-300 px-3 py-1.5 rounded-lg flex items-center gap-2">
@@ -60,7 +60,7 @@
                 <div id="cameraPrompt" class="absolute inset-0 bg-gray-950/95 flex flex-col items-center justify-center p-6 text-center">
                     <i id="promptIcon" class="fa-solid fa-camera text-4xl text-indigo-400 mb-3"></i>
                     <p id="promptTitle" class="font-semibold text-white mb-1">AI 발표 인식기 가동</p>
-                    <p id="promptDesc" class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서 즉시 연산된 후 파기됩니다 [1].</p>
+                    <p id="promptDesc" class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서 즉시 연산된 후 파기됩니다.</p>
                     <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
                         카메라 권한 승인 및 시작
                     </button>
@@ -75,10 +75,11 @@
 
             <!-- AI Engine Rules Card -->
             <div class="bg-gray-900/50 rounded-xl p-3 border border-gray-700/30 text-xs text-gray-300 space-y-2">
-                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> AI 자리 공간 감지 안내:</p>
+                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> 원근 공간 동적 매핑 기술:</p>
                 <ul class="list-disc list-inside space-y-1 text-gray-400 pl-1">
-                    <li>카메라 화면 내 오버레이된 그리드 영역에 맞추어 서 있으면 해당 자리의 학생으로 정확히 1:1 자동 대조 인식됩니다 [1].</li>
-                    <li>손목이 눈 좌표보다 높아지면 손들기 누적 카운트가 올라갑니다.</li>
+                    <li>카메라 왜곡을 교정하기 위한 <span class="text-indigo-300 font-bold">사다리꼴 3D 공간 연산 그리드</span>가 내장되어 있습니다 [1].</li>
+                    <li>뒷줄(C행)은 가늘고 촘촘하게, 앞줄(A행)은 넓고 깊게 학생 위치를 지능적으로 역추적합니다 [1].</li>
+                    <li>화면에 띄워진 가이드 글자들은 거울 모드 화면에서도 **정방향**으로 올바르게 보입니다.</li>
                 </ul>
             </div>
         </section>
@@ -126,7 +127,7 @@
                         <i class="fa-solid fa-list-ol text-amber-400"></i> 실시간 선착순 순위 (최대 5명)
                     </h4>
                     <div id="rankingList" class="flex flex-wrap gap-2 py-1">
-                        <span class="text-xs text-gray-500 py-1">질문 시작 후 카메라 격자 구역 안에서 손을 들면 선착순으로 해당 자리 학생이 자동 기입됩니다.</span>
+                        <span class="text-xs text-gray-500 py-1">질문 시작 후 카메라의 사다리꼴 구역 내부에서 손을 들면 선착순으로 자동 배치됩니다.</span>
                     </div>
                 </div>
 
@@ -224,7 +225,7 @@
                     <p class="font-bold flex items-center gap-1 mb-1">
                         <i class="fa-solid fa-magic"></i> AI 생기부 연동 TIP
                     </p>
-                    이 로그 테이블은 DB와 실시간 동기화되어 저장됩니다 [1]. 학기 말 대시보드에서 축적된 평가 태그 및 밀리초(ms) 반응 속도와 메모를 바탕으로 나이스(NEIS) 입력용 생기부 과세특 초안 문구가 AI로 자동 추천됩니다 [1].
+                    이 로그 테이블은 DB와 실시간 동기화되어 저장됩니다. 학기 말 대시보드에서 축적된 평가 태그 및 밀리초(ms) 반응 속도와 메모를 바탕으로 나이스(NEIS) 입력용 생기부 과세특 초안 문구가 AI로 자동 추천됩니다.
                 </div>
             </div>
         </section>
@@ -270,9 +271,22 @@
         const statusLogs = document.getElementById('statusLogs');
 
         let handRaisedStartTime = null;
-        const DURATION_THRESHOLD = 500; // 0.5초(500ms) 유지 조건 [1]
+        const DURATION_THRESHOLD = 500; // 0.5초(500ms) 유지 조건
         let poseModel = null;
         let isCameraStreamActive = false;
+
+        // 📐 3D Perspective Quadrilateral Calibration Parameters [1]
+        // 4 Horizontal Boundary lines (Y heights)
+        const Y_LEVELS = [0.30, 0.52, 0.72, 0.95]; 
+        
+        // 5 Column Boundary points (X ratios) at each corresponding Y Level
+        // Perspective effect: getting narrower towards the top of the screen (Back Row C) [1]
+        const X_BOUNDS = [
+            [0.25, 0.375, 0.50, 0.625, 0.75], // Level 0 (Y=0.30) - Back Row C boundary
+            [0.18, 0.34,  0.50, 0.66,  0.82], // Level 1 (Y=0.52) - Mid Row C-B boundary
+            [0.08, 0.29,  0.50, 0.71,  0.92], // Level 2 (Y=0.72) - Front Row B-A boundary
+            [0.02, 0.26,  0.50, 0.74,  0.98]  // Level 3 (Y=0.95) - Nearest front edge of A
+        ];
 
         // Custom Console log helper
         function addLog(text, type = 'info') {
@@ -291,7 +305,7 @@
             statusLogs.scrollTop = statusLogs.scrollHeight;
         }
 
-        // Initialize Classroom Grid [1]
+        // Initialize Classroom Grid
         const gridContainer = document.getElementById('classroomGrid');
         function initGrid() {
             gridContainer.innerHTML = '';
@@ -311,7 +325,7 @@
             });
         }
 
-        // Timer logics [1]
+        // Timer logics
         function startResponseTimer() {
             resetTimer();
             isSessionActive = true;
@@ -455,82 +469,112 @@
             ctx.fill();
         }
 
-        // Draw Verifiable Classroom Seating Grid Boundaries on top of the webcam canvas [1]
+        // 📐 Draw Perspective Trapezoidal Grid on top of the webcam canvas (Drawn upright and mirrored-safe!) [1]
         function drawCalibrationGrid(ctx, activeSeat) {
             const w = canvasElement.width;
             const h = canvasElement.height;
 
             ctx.save();
             
-            // Draw 3 Vertical boundaries (for Columns 1 to 4)
-            ctx.strokeStyle = "rgba(99, 102, 241, 0.4)"; // indigo
+            // 1. Draw 4 Horizontal boundaries lines (Trapezoid segments) [1]
+            ctx.strokeStyle = "rgba(99, 102, 241, 0.45)"; // Indigo
             ctx.lineWidth = 1.5;
-            ctx.setLineDash([4, 4]);
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 0; i < 4; i++) {
                 ctx.beginPath();
-                ctx.moveTo(w * (i * 0.25), 0);
-                ctx.lineTo(w * (i * 0.25), h);
+                ctx.moveTo(X_BOUNDS[i][0] * w, Y_LEVELS[i] * h);
+                ctx.lineTo(X_BOUNDS[i][4] * w, Y_LEVELS[i] * h);
                 ctx.stroke();
             }
 
-            // Draw 2 Horizontal boundaries (for Rows C, B, A)
-            // Divide lines at Y = 50%, Y = 70%
-            const rowLines = [0.50, 0.70];
-            rowLines.forEach(yRatio => {
+            // 2. Draw 5 Vertical Perspective boundaries lines (Converging to Center) [1]
+            ctx.strokeStyle = "rgba(99, 102, 241, 0.35)";
+            ctx.setLineDash([4, 4]);
+            for (let j = 0; j < 5; j++) {
                 ctx.beginPath();
-                ctx.moveTo(0, h * yRatio);
-                ctx.lineTo(w, h * yRatio);
+                ctx.moveTo(X_BOUNDS[0][j] * w, Y_LEVELS[0] * h);
+                for (let i = 1; i < 4; i++) {
+                    ctx.lineTo(X_BOUNDS[i][j] * w, Y_LEVELS[i] * h);
+                }
                 ctx.stroke();
-            });
+            }
+            ctx.setLineDash([]);
 
-            // Write labels inside the grid zones [1]
+            // 3. Define and draw seating cells [1]
             const gridLayout = [
-                { seat: "C4", name: "한지우", x: 0.125, y: 0.25 },
-                { seat: "C3", name: "장서하", x: 0.375, y: 0.25 },
-                { seat: "C2", name: "임하윤", x: 0.625, y: 0.25 },
-                { seat: "C1", name: "이준서", x: 0.875, y: 0.25 },
+                { seat: "C4", name: "한지우", r: 0, c: 0 },
+                { seat: "C3", name: "장서하", r: 0, c: 1 },
+                { seat: "C2", name: "임하윤", r: 0, c: 2 },
+                { seat: "C1", name: "이준서", r: 0, c: 3 },
 
-                { seat: "B4", name: "서유진", x: 0.125, y: 0.60 },
-                { seat: "B3", name: "박소윤", x: 0.375, y: 0.60 },
-                { seat: "B2", name: "민지아", x: 0.625, y: 0.60 },
-                { seat: "B1", name: "도현우", x: 0.875, y: 0.60 },
+                { seat: "B4", name: "서유진", r: 1, c: 0 },
+                { seat: "B3", name: "박소윤", r: 1, c: 1 },
+                { seat: "B2", name: "민지아", r: 1, c: 2 },
+                { seat: "B1", name: "도현우", r: 1, c: 3 },
 
-                { seat: "A4", name: "김예준", x: 0.125, y: 0.85 },
-                { seat: "A3", name: "김서준", x: 0.375, y: 0.85 },
-                { seat: "A2", name: "김민준", x: 0.625, y: 0.85 },
-                { seat: "A1", name: "강도윤", x: 0.875, y: 0.85 }
+                { seat: "A4", name: "김예준", r: 2, c: 0 },
+                { seat: "A3", name: "김서준", r: 2, c: 1 },
+                { seat: "A2", name: "김민준", r: 2, c: 2 },
+                { seat: "A1", name: "강도윤", r: 2, c: 3 }
             ];
 
-            ctx.setLineDash([]);
             gridLayout.forEach(cell => {
                 const isHovered = activeSeat === cell.seat;
-                ctx.fillStyle = isHovered ? "rgba(245, 158, 11, 0.25)" : "rgba(255, 255, 255, 0.05)";
-                if (isHovered) {
-                    ctx.fillRect(w * (cell.x - 0.125), h * (cell.y - (cell.y < 0.5 ? 0.25 : cell.y < 0.7 ? 0.10 : 0.15)), w * 0.25, h * (cell.y < 0.5 ? 0.5 : cell.y < 0.7 ? 0.2 : 0.3));
-                }
                 
-                ctx.fillStyle = isHovered ? "#f59e0b" : "rgba(255, 255, 255, 0.4)";
-                ctx.font = isHovered ? "bold 11px sans-serif" : "10px sans-serif";
+                // Coordinates for 4 corners of the trapezoid cell [1]
+                const pTL = { x: X_BOUNDS[cell.r][cell.c] * w,     y: Y_LEVELS[cell.r] * h };
+                const pTR = { x: X_BOUNDS[cell.r][cell.c+1] * w,   y: Y_LEVELS[cell.r] * h };
+                const pBR = { x: X_BOUNDS[cell.r+1][cell.c+1] * w, y: Y_LEVELS[cell.r+1] * h };
+                const pBL = { x: X_BOUNDS[cell.r+1][cell.c] * w,   y: Y_LEVELS[cell.r+1] * h };
+
+                // Draw filled highlighting area if active [1]
+                if (isHovered) {
+                    ctx.beginPath();
+                    ctx.moveTo(pTL.x, pTL.y);
+                    ctx.lineTo(pTR.x, pTR.y);
+                    ctx.lineTo(pBR.x, pBR.y);
+                    ctx.lineTo(pBL.x, pBL.y);
+                    ctx.closePath();
+                    ctx.fillStyle = "rgba(245, 158, 11, 0.25)"; // Amber glow
+                    ctx.fill();
+                }
+
+                // Centroid coordinates of the trapezoid cell for label text [1]
+                const centerX = (pTL.x + pTR.x + pBR.x + pBL.x) / 4;
+                const centerY = (pTL.y + pTR.y + pBR.y + pBL.y) / 4;
+
+                // Write labels (Guaranteed upright and non-mirrored!) [1]
+                ctx.fillStyle = isHovered ? "#f59e0b" : "rgba(255, 255, 255, 0.45)";
+                ctx.font = isHovered ? "bold 11px sans-serif" : "9px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(`${cell.seat} ${cell.name}`, w * cell.x, h * cell.y);
+                ctx.fillText(`${cell.seat} ${cell.name}`, centerX, centerY);
             });
 
             ctx.restore();
         }
 
-        // MediaPipe results processing loop with Spatial Coordinate Mapping [1]
+        // MediaPipe results processing loop [1]
         function onPoseResults(results) {
             canvasElement.width = videoElement.videoWidth || 640;
             canvasElement.height = videoElement.videoHeight || 360;
 
+            // 1. MIRRORED PASS: Draw flipped camera stream and skeletal bones inside mirror matrix [1]
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
             
-            // Mirror flip & Draw original webcam capture
+            // Mirror flip transformation on the canvas context [1]
+            canvasCtx.translate(canvasElement.width, 0);
+            canvasCtx.scale(-1, 1);
+            
+            // Draw original frame in mirrored state
             canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            let screenX = 0;
+            let shoulderY = 0;
+            let hasPose = false;
 
             if (results.poseLandmarks) {
                 const landmarks = results.poseLandmarks;
+                hasPose = true;
 
                 // Key landmarks
                 const leftEye = landmarks[2];
@@ -546,30 +590,7 @@
                 const leftElbow = landmarks[13];
                 const rightElbow = landmarks[14];
 
-                // 📐 Spatial Seating Coordinate Mapping [1]
-                // Use average position of left and right shoulders to determine student's position
-                const shoulderX = (leftShoulder.x + rightShoulder.x) / 2;
-                const shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
-
-                // Adjust X for screen visual mirror (Left on screen is Right in raw camera coordinate)
-                const screenX = 1 - shoulderX;
-
-                // 1. Column Assignment (1 to 4)
-                let col = 1;
-                if (screenX < 0.25) col = 4;      // Left area of mirrored screen
-                else if (screenX < 0.50) col = 3;
-                else if (screenX < 0.75) col = 2;
-                else col = 1;                     // Right area of mirrored screen
-
-                // 2. Row Assignment (A, B, C) based on 원근감 Y value [1]
-                let row = 'C';
-                if (shoulderY > 0.70) row = 'A';      // Close to camera (Front row)
-                else if (shoulderY > 0.50) row = 'B'; // Middle row
-                else row = 'C';                       // Far from camera (Back row)
-
-                currentActiveSeatCode = `${row}${col}`;
-
-                // Draw lines and joints
+                // Draw bones & joints (Aligned with the flipped camera view [1])
                 drawBone(canvasCtx, leftShoulder, rightShoulder, 4, "#6366f1");
                 drawBone(canvasCtx, leftShoulder, leftElbow, 4, "#6366f1");
                 drawBone(canvasCtx, leftElbow, leftWrist, 4, "#6366f1");
@@ -579,7 +600,53 @@
                 const criticalPoints = [nose, leftEye, rightEye, leftEar, rightEar, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist];
                 criticalPoints.forEach(p => drawJoint(canvasCtx, p, 5, "#f59e0b"));
 
-                // 핵심 알고리즘: "손 wrist 위치가 눈 eye 위치보다 위에 있을 때"
+                // Calculate screen mirrored coordinates for calibration mapping [1]
+                const shoulderX = (leftShoulder.x + rightShoulder.x) / 2;
+                shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
+                screenX = 1 - shoulderX; // Invert to match mirrored display space (0.0=left, 1.0=right)
+
+                // 2. UN-MIRRORED PASS: Restore canvas transform matrix to default to render Text and Calibration Grids upright! [1]
+                canvasCtx.restore(); 
+
+                // 📐 Perspective Seating Coordinate Mapping [1]
+                let row = -1;
+                if (shoulderY >= Y_LEVELS[0] && shoulderY < Y_LEVELS[1]) row = 0;      // Row C (Far)
+                else if (shoulderY >= Y_LEVELS[1] && shoulderY < Y_LEVELS[2]) row = 1; // Row B (Mid)
+                else if (shoulderY >= Y_LEVELS[2] && shoulderY <= Y_LEVELS[3]) row = 2;// Row A (Near)
+
+                let col = -1;
+                if (row !== -1) {
+                    const yTop = Y_LEVELS[row];
+                    const yBottom = Y_LEVELS[row + 1];
+                    const ratio = (shoulderY - yTop) / (yBottom - yTop);
+
+                    const xB_top = X_BOUNDS[row];
+                    const xB_bottom = X_BOUNDS[row + 1];
+
+                    // Linear interpolation of the column boundaries at current shoulder height Y [1]
+                    const tempBounds = [];
+                    for (let j = 0; j < 5; j++) {
+                        tempBounds.push(xB_top[j] + (xB_bottom[j] - xB_top[j]) * ratio);
+                    }
+
+                    // Check which perspective sector the student is standing in
+                    for (let c = 0; c < 4; c++) {
+                        if (screenX >= tempBounds[c] && screenX < tempBounds[c+1]) {
+                            col = c;
+                            break;
+                        }
+                    }
+                }
+
+                if (row !== -1 && col !== -1) {
+                    const rowLabels = ['C', 'B', 'A'];
+                    const colLabels = [4, 3, 2, 1]; // Col index 0=4, 1=3, 2=2, 3=1
+                    currentActiveSeatCode = `${rowLabels[row]}${colLabels[col]}`;
+                } else {
+                    currentActiveSeatCode = null;
+                }
+
+                // AI Hand Raising verification (Wrist height vs Eye height) [1]
                 const isLeftHandRaised = leftWrist.y < leftEye.y;
                 const isRightHandRaised = rightWrist.y < rightEye.y;
 
@@ -590,7 +657,7 @@
                         const duration = performance.now() - handRaisedStartTime;
                         const percent = Math.min((duration / DURATION_THRESHOLD) * 100, 100);
                         
-                        // 0.5초 조건 도달 확인 [1]
+                        // Verification completed after 0.5s [1]
                         if (duration >= DURATION_THRESHOLD) {
                             const detectedStudent = students.find(s => s.seat === currentActiveSeatCode);
                             if (detectedStudent) {
@@ -598,7 +665,8 @@
                             }
                         }
 
-                        // Drawing UI progress bar overlay
+                        // Drawing UI progress bar overlay (Drawn upright and readable!)
+                        canvasCtx.save();
                         canvasCtx.fillStyle = '#10B981';
                         canvasCtx.fillRect(10, 10, percent * 2.5, 12);
                         canvasCtx.strokeStyle = '#ffffff';
@@ -606,21 +674,21 @@
                         canvasCtx.fillStyle = '#ffffff';
                         canvasCtx.font = "bold 11px sans-serif";
                         canvasCtx.fillText(`손들기 인식 중 ... ${Math.floor(percent)}%`, 15, 20);
+                        canvasCtx.restore();
                     }
                 } else {
                     handRaisedStartTime = null;
                 }
             } else {
+                canvasCtx.restore(); // Safety fallback if no pose landmarks are found
                 currentActiveSeatCode = null;
             }
 
-            // Draw classroom seating boundaries & grid overlay on top of webcam frame [1]
+            // Draw calibration perspective lines & cell labels upright [1]
             drawCalibrationGrid(canvasCtx, currentActiveSeatCode);
-
-            canvasCtx.restore();
         }
 
-        // Multi-ranking Hand Raise Trigger (Up to 5 students with exact matching) [1]
+        // Multi-ranking Hand Raise Trigger (Up to 5 students with exact matching)
         function triggerAIHandRaise(detectedStudent) {
             if (sessionRankings.length >= 5) {
                 stopResponseTimer();
