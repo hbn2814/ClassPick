@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClassPick - AI 과정 중심 평가 및 발표 관리</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts - Inter & Pretendard -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     
-    <!-- MediaPipe Pose AI Engine 복원 -->
+    <!-- MediaPipe Pose AI Engine -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 
     <style>
-        body { font-family: "Pretendard Variable", sans-serif; }
-        .perspective-canvas { transform: none !important; }
+        body {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
@@ -21,32 +25,36 @@
     <!-- Header -->
     <header class="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-8 py-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="bg-indigo-600 text-white font-extrabold px-3.5 py-1.5 rounded-xl text-lg shadow-md shadow-indigo-600/20">ClassPick</div>
+            <div class="bg-indigo-600 text-white font-extrabold px-3.5 py-1.5 rounded-xl text-lg tracking-wider shadow-md shadow-indigo-600/20">ClassPick</div>
             <div>
-                <h1 class="text-sm font-bold text-slate-800">대원고등학교 <span class="text-indigo-500 mx-1">•</span> 1학년 2반</h1>
+                <h1 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    대원고등학교 <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span> 1학년 2반
+                </h1>
                 <p class="text-[11px] text-slate-400 font-medium">AI 실시간 수업 참여도 분석 대시보드</p>
             </div>
         </div>
         <div class="text-xs text-slate-500 font-medium flex items-center gap-3 bg-slate-100 px-3 py-1.5 rounded-full">
             <span id="engineStatus" class="w-2 h-2 rounded-full bg-slate-400"></span>
-            <span id="engineLabel">AI 엔진 준비 중</span>
+            <span id="engineLabel">로컬 프로세싱 엔진 대기 중</span>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Left: AI Camera Area -->
+        <!-- Left Column: Front Camera Area -->
         <section class="lg:col-span-5 bg-white border border-slate-200/60 rounded-3xl p-5 flex flex-col gap-4 shadow-sm shadow-slate-100">
             <div class="flex justify-between items-center">
                 <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
                     <i class="fa-solid fa-video text-indigo-500"></i> AI 웹캠 실시간 분석
                 </h2>
-                <span class="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full font-bold">3D Perspective Mapping</span>
+                <span class="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full font-bold">
+                    3D Perspective Calibration
+                </span>
             </div>
 
             <div class="relative aspect-video bg-slate-100 rounded-2xl overflow-hidden border border-slate-200/60 flex items-center justify-center shadow-inner">
                 <video id="webcam" autoplay playsinline muted class="hidden"></video>
-                <canvas id="skeletonCanvas" class="w-full h-full perspective-canvas"></canvas>
+                <canvas id="skeletonCanvas" class="w-full h-full"></canvas>
                 
                 <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-[11px] font-bold text-slate-700 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm border border-slate-100">
                     <span id="cameraPulse" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
@@ -57,30 +65,45 @@
                     <div class="bg-indigo-50 p-4 rounded-full text-indigo-600 mb-3 shadow-sm shadow-indigo-100">
                         <i id="promptIcon" class="fa-solid fa-camera text-2xl"></i>
                     </div>
-                    <p class="font-bold text-slate-800 mb-1">AI 발표 인식기 가동</p>
-                    <p class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">개인정보 보호를 위해 영상은 로컬 디바이스에서 즉시 연산된 후 파기됩니다 [1].</p>
-                    <button onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/20 transition-all active:scale-95">카메라 연결 및 분석 시작</button>
+                    <p id="promptTitle" class="font-bold text-slate-800 mb-1">AI 발표 인식기 가동</p>
+                    <p id="promptDesc" class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">개인정보 보호를 위해 영상은 데이터베이스나 외부 서버로 전송되지 않고 즉시 파기됩니다 [1].</p>
+                    <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
+                        카메라 연결 및 분석 가동
+                    </button>
                     <div id="loadingStatus" class="hidden mt-4 w-full max-w-xs bg-slate-50 rounded-xl p-3 text-left border border-slate-200/60 shadow-inner">
                         <div class="text-[10px] text-slate-500 space-y-1" id="statusLogs"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/40 text-xs text-slate-600">
-                <p class="font-bold text-slate-700 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-lightbulb text-amber-500"></i> 고심도 원근 교정 격자</p>
-                <p class="text-slate-500 leading-relaxed">교실 맨 앞줄(A)부터 맨 뒷줄(C)까지의 원근 왜곡을 물리 좌표로 보정하여 발표자를 정확히 판정합니다 [1].</p>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/40 text-xs text-slate-600 space-y-2">
+                <p class="font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> 고심도 원근 교정 시스템
+                </p>
+                <p class="text-slate-500 leading-relaxed">
+                    교실의 맨 앞 분단부터 맨 뒷 분단까지 원근 왜곡을 물리 좌표 평면으로 확장 설계했습니다 [1]. 손을 들면 해당 구역의 학생이 **주황색 하이라이트**로 강조됩니다.
+                </p>
             </div>
         </section>
 
-        <!-- Right: Control Panel -->
+        <!-- Right Column: Control Panel -->
         <section class="lg:col-span-7 flex flex-col gap-6">
             <div class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm shadow-slate-100">
                 <div class="flex justify-between items-center mb-5">
-                    <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base"><i class="fa-solid fa-compass text-indigo-500"></i> 수업 제어 패널</h2>
+                    <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+                        <i class="fa-solid fa-compass text-indigo-500"></i> 수업 제어 패널
+                    </h2>
                     <div class="flex gap-2">
-                        <button onclick="startResponseTimer()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-indigo-600/15 transition-all"><i class="fa-solid fa-play"></i> 질문 시작</button>
-                        <button onclick="stopResponseTimer()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-rose-600/15 transition-all"><i class="fa-solid fa-stop"></i> 정지</button>
-                        <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition-all ml-1">리셋</button>
+                        <button onclick="startResponseTimer()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-indigo-600/15">
+                            <i class="fa-solid fa-play"></i> 질문 시작
+                        </button>
+                        <!-- Added Stop Button [1] -->
+                        <button onclick="stopResponseTimer()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shadow-rose-600/15">
+                            <i class="fa-solid fa-stop"></i> 정지
+                        </button>
+                        <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition-all ml-1">
+                            리셋
+                        </button>
                     </div>
                 </div>
 
@@ -100,48 +123,51 @@
                 </div>
 
                 <div class="bg-slate-50 border border-slate-200/40 rounded-2xl p-4 mb-5">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5"><i class="fa-solid fa-list-ol text-amber-500"></i> 실시간 선착순 명단 (TOP 5)</h4>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-ol text-amber-500"></i> 실시간 선착순 명단 (TOP 5)
+                    </h4>
                     <div id="rankingList" class="flex flex-wrap gap-2 min-h-[36px] items-center">
-                        <span class="text-xs text-slate-400 font-medium">질문 시작 후 손을 들면 반응 시간과 순위가 여기에 표시됩니다.</span>
+                        <span class="text-xs text-slate-400 font-medium">질문 시작 후 학생들이 손을 들면 실시간 순위와 정밀 타임코드가 기입됩니다.</span>
                     </div>
                 </div>
 
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5"><i class="fa-solid fa-grid-2"></i> 교실 좌석 모니터링 배치도</h3>
-                <div class="grid grid-cols-4 gap-3.5" id="classroomGrid"></div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                    <i class="fa-solid fa-grid-2"></i> 교실 좌석 모니터링 배치도
+                </h3>
+                <div class="grid grid-cols-4 gap-3.5 mb-2" id="classroomGrid"></div>
             </div>
         </section>
 
-        <!-- Bottom: Logging & Evaluation -->
+        <!-- Evaluation Tag & Data Logging Section (Bottom) -->
         <section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm shadow-slate-100">
             <div class="flex flex-col gap-4">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-pen-fancy text-indigo-500"></i> 역량 중심 즉시 평가 기록</h3>
                 <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/40 flex flex-col gap-4">
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">선택된 발표자</label>
-                        <input id="targetStudent" type="text" class="w-full bg-white border border-slate-200/60 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-bold" readonly placeholder="순위표나 좌석을 클릭해 주세요">
+                        <label class="text-[11px] font-bold text-slate-400 block mb-1.5 uppercase">선택된 발표자</label>
+                        <input id="targetStudent" type="text" class="w-full bg-white border border-slate-200/60 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-bold" readonly placeholder="순위표나 교실 자리 버튼을 눌러 지정해 주세요">
                     </div>
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">핵심 핵심역량 태그</label>
+                        <label class="text-[11px] font-bold text-slate-400 block mb-1.5 uppercase">핵심 역량 태그</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="selectTag('창의성')" class="tag-btn bg-white hover:bg-indigo-50 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"><i class="fa-solid fa-lightbulb text-indigo-500"></i> 창의성</button>
-                            <button onclick="selectTag('의사소통')" class="tag-btn bg-white hover:bg-emerald-50 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"><i class="fa-solid fa-comments text-emerald-500"></i> 의사소통</button>
-                            <button onclick="selectTag('문제 해결력')" class="tag-btn bg-white hover:bg-rose-50 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"><i class="fa-solid fa-brain text-rose-500"></i> 문제 해결력</button>
-                            <button onclick="selectTag('협업능력')" class="tag-btn bg-white hover:bg-amber-50 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"><i class="fa-solid fa-users text-amber-500"></i> 협업능력</button>
+                            <button onclick="selectTag('창의성')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">창의성</button>
+                            <button onclick="selectTag('의사소통')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">의사소통</button>
+                            <button onclick="selectTag('문제 해결력')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">문제 해결력</button>
+                            <button onclick="selectTag('협업능력')" class="tag-btn bg-white border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all">협업능력</button>
                         </div>
                     </div>
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1.5">즉석 수행 관찰 서술 메모</label>
-                        <textarea id="observationMemo" rows="2" class="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-xs text-slate-700 placeholder-slate-400" placeholder="학생의 구체적인 답변 특징을 기입해 주세요."></textarea>
+                        <label class="text-[11px] font-bold text-slate-400 block mb-1.5 uppercase">관찰 메모</label>
+                        <textarea id="observationMemo" rows="2" class="w-full bg-white border border-slate-200/60 rounded-xl p-3 text-xs text-slate-700" placeholder="학생의 답변 특징을 기입해 주세요."></textarea>
                     </div>
-                    <button onclick="saveActivityLog()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-600/15 transition-all"><i class="fa-solid fa-floppy-disk"></i> 평가 데이터 저장 및 동기화</button>
+                    <button onclick="saveActivityLog()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-sm shadow-indigo-600/15">저장 및 동기화</button>
                 </div>
             </div>
-
             <div class="flex flex-col h-full justify-between gap-4">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-database text-indigo-500"></i> 학급 누적 기록부</h3>
-                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-file-excel"></i> 엑셀 출력</button>
+                        <button onclick="exportToCSV()" class="bg-emerald-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i> 엑셀 출력</button>
                     </div>
                     <div class="overflow-y-auto max-h-[280px] border border-slate-200/60 rounded-2xl bg-slate-50 shadow-inner">
                         <table class="w-full text-left text-xs text-slate-600 border-collapse">
@@ -149,14 +175,13 @@
                                 <tr><th class="p-3">학생</th><th class="p-3">반응 시간</th><th class="p-3">역량</th><th class="p-3">관찰 메모</th><th class="p-3 text-center">삭제</th></tr>
                             </thead>
                             <tbody id="logTableBody" class="divide-y divide-slate-100">
-                                <tr id="emptyRow" class="text-center text-slate-400"><td colspan="5" class="py-16">아직 기록된 로그가 없습니다.</td></tr>
+                                <tr id="emptyRow" class="text-center text-slate-400"><td colspan="5" class="py-16">기록이 없습니다.</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="bg-indigo-50/60 p-4 border border-indigo-100/50 rounded-2xl text-[11px] text-slate-500">
-                    <p class="font-bold text-indigo-900 mb-1 flex items-center gap-1"><i class="fa-solid fa-magic"></i> AI 생기부 연동 안내</p>
-                    저장된 역량 데이터는 학기 말 '생기부 추천 문구' 자동 생성에 활용됩니다 [1].
+                    AI 생활기록부 문항 자동화 안내: ms 반응 속도 데이터는 학기말 대시보드 통계 기법과 결합됩니다 [1].
                 </div>
             </div>
         </section>
@@ -177,8 +202,7 @@
         let poseModel = null, isCameraStreamActive = false;
         let handRaisedStartTime = null; const DURATION_THRESHOLD = 500;
 
-        const videoElement = document.getElementById('webcam'), canvasElement = document.getElementById('skeletonCanvas'), canvasCtx = canvasElement.getContext('2d');
-        const Y_LEVELS = [0.22, 0.48, 0.72, 0.96];
+        const Y_LEVELS = [0.22, 0.48, 0.72, 0.96]; 
         const X_BOUNDS = [
             [0.32, 0.41, 0.50, 0.59, 0.68], [0.22, 0.36, 0.50, 0.64, 0.78],
             [0.10, 0.30, 0.50, 0.70, 0.90], [0.01, 0.25, 0.50, 0.75, 0.99]
@@ -189,12 +213,20 @@
             return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}:${String(cs).padStart(2, '0')}`;
         }
 
+        function addLog(text, type = 'info') {
+            const div = document.createElement('div');
+            div.innerHTML = type === 'error' ? `<span class="text-rose-500 font-bold">❌ Error:</span> ${text}` : type === 'success' ? `<span class="text-emerald-500 font-bold">✔ Success:</span> ${text}` : `<span class="text-indigo-500 font-medium">⏱ Log:</span> ${text}`;
+            document.getElementById('statusLogs').appendChild(div);
+            document.getElementById('statusLogs').scrollTop = document.getElementById('statusLogs').scrollHeight;
+        }
+
         async function initAISystem() {
             document.getElementById('loadingStatus').classList.remove('hidden');
+            addLog("카메라 미디어 승인 시도 중...");
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 360 }, audio: false });
-                videoElement.srcObject = stream;
-                await new Promise(r => videoElement.onloadedmetadata = () => { videoElement.play(); r(); });
+                document.getElementById('webcam').srcObject = stream;
+                await new Promise(r => document.getElementById('webcam').onloadedmetadata = r);
                 isCameraStreamActive = true;
                 
                 poseModel = new Pose({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
@@ -208,69 +240,51 @@
                 document.getElementById('cameraPrompt').style.display = 'none';
                 
                 requestAnimationFrame(processVideoFrame);
-            } catch (e) { alert("연결 실패: " + e.message); }
+            } catch (e) { addLog("연결 실패: " + e.message, "error"); }
         }
 
         async function processVideoFrame() {
-            if (isCameraStreamActive && !videoElement.paused) await poseModel.send({ image: videoElement });
+            if (isCameraStreamActive && !document.getElementById('webcam').paused) await poseModel.send({ image: document.getElementById('webcam') });
             requestAnimationFrame(processVideoFrame);
         }
 
         function onPoseResults(results) {
-            canvasElement.width = videoElement.videoWidth || 640;
-            canvasElement.height = videoElement.videoHeight || 360;
-            
-            canvasCtx.save();
-            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-            
-            // Mirror Draw
-            canvasCtx.translate(canvasElement.width, 0);
-            canvasCtx.scale(-1, 1);
-            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+            const canvas = document.getElementById('skeletonCanvas'), ctx = canvas.getContext('2d');
+            canvas.width = 640; canvas.height = 360;
+            ctx.save(); ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
+            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
             
             if (results.poseLandmarks) {
                 const lm = results.poseLandmarks;
-                // Draw Skeleton
-                const connections = [[11,12], [11,13], [13,15], [12,14], [14,16]];
-                canvasCtx.strokeStyle = "rgba(99, 102, 241, 0.8)"; canvasCtx.lineWidth = 3;
-                connections.forEach(([i, j]) => {
-                    canvasCtx.beginPath();
-                    canvasCtx.moveTo(lm[i].x * canvasElement.width, lm[i].y * canvasElement.height);
-                    canvasCtx.lineTo(lm[j].x * canvasElement.width, lm[j].y * canvasElement.height);
-                    canvasCtx.stroke();
-                });
-
                 const sx = 1 - (lm[11].x + lm[12].x) / 2, sy = (lm[11].y + lm[12].y) / 2;
-                canvasCtx.restore();
+                ctx.restore(); 
                 
-                // Position Logic
                 let r = -1; if (sy >= Y_LEVELS[0] && sy < Y_LEVELS[1]) r = 0; else if (sy >= Y_LEVELS[1] && sy < Y_LEVELS[2]) r = 1; else if (sy >= Y_LEVELS[2] && sy <= Y_LEVELS[3]) r = 2;
                 let c = -1; if (r !== -1) {
                     const ratio = (sy - Y_LEVELS[r]) / (Y_LEVELS[r+1] - Y_LEVELS[r]), tb = X_BOUNDS[r], bb = X_BOUNDS[r+1];
                     for (let j = 0; j < 4; j++) {
-                        const l = tb[j] + (bb[j] - tb[j]) * ratio, rt = tb[j+1] + (bb[j+1] - tb[j+1]) * ratio;
-                        if (sx >= l && sx < rt) { c = j; break; }
+                        const left = tb[j] + (bb[j] - tb[j]) * ratio, right = tb[j+1] + (bb[j+1] - tb[j+1]) * ratio;
+                        if (sx >= left && sx < right) { c = j; break; }
                     }
                 }
                 currentActiveSeatCode = r !== -1 && c !== -1 ? `${['C','B','A'][r]}${[4,3,2,1][c]}` : null;
 
-                // Hand Raise Logic (Wrist vs Eye)
                 if (isSessionActive && (lm[15].y < lm[2].y || lm[16].y < lm[5].y)) {
                     if (!handRaisedStartTime) handRaisedStartTime = performance.now();
                     else if (performance.now() - handRaisedStartTime >= DURATION_THRESHOLD) {
                         const target = students.find(s => s.seat === currentActiveSeatCode);
                         if (target) triggerAIHandRaise(target);
                     }
-                    // Progress Bar
-                    canvasCtx.fillStyle = "rgba(249, 115, 22, 0.8)";
-                    canvasCtx.fillRect(10, 10, ((performance.now() - handRaisedStartTime)/DURATION_THRESHOLD)*200, 10);
+                    ctx.fillStyle = "rgba(249, 115, 22, 0.8)";
+                    ctx.fillRect(10, 10, ((performance.now() - handRaisedStartTime)/DURATION_THRESHOLD)*200, 10);
                 } else { handRaisedStartTime = null; }
-            } else { canvasCtx.restore(); currentActiveSeatCode = null; }
-            drawCalibrationGrid(canvasCtx, currentActiveSeatCode);
+            } else { ctx.restore(); currentActiveSeatCode = null; }
+            drawCalibrationGrid(ctx, currentActiveSeatCode);
         }
 
         function drawCalibrationGrid(ctx, active) {
-            const w = canvasElement.width, h = canvasElement.height;
+            const canvas = document.getElementById('skeletonCanvas'), w = canvas.width, h = canvas.height;
             const cells = [
                 { seat: "C4", r: 0, c: 0 }, { seat: "C3", r: 0, c: 1 }, { seat: "C2", r: 0, c: 2 }, { seat: "C1", r: 0, c: 3 },
                 { seat: "B4", r: 1, c: 0 }, { seat: "B3", r: 1, c: 1 }, { seat: "B2", r: 1, c: 2 }, { seat: "B1", r: 1, c: 3 },
@@ -281,9 +295,9 @@
                 const pTL = { x: X_BOUNDS[cell.r][cell.c] * w, y: Y_LEVELS[cell.r] * h }, pTR = { x: X_BOUNDS[cell.r][cell.c+1] * w, y: Y_LEVELS[cell.r] * h }, pBR = { x: X_BOUNDS[cell.r+1][cell.c+1] * w, y: Y_LEVELS[cell.r+1] * h }, pBL = { x: X_BOUNDS[cell.r+1][cell.c] * w, y: Y_LEVELS[cell.r+1] * h };
                 if (isHover) {
                     ctx.beginPath(); ctx.moveTo(pTL.x, pTL.y); ctx.lineTo(pTR.x, pTR.y); ctx.lineTo(pBR.x, pBR.y); ctx.lineTo(pBL.x, pBL.y); ctx.closePath();
-                    ctx.fillStyle = "rgba(249, 115, 22, 0.4)"; ctx.fill(); ctx.strokeStyle = "rgba(249, 115, 22, 0.8)"; ctx.stroke();
+                    ctx.fillStyle = "rgba(249, 115, 22, 0.45)"; ctx.fill(); ctx.strokeStyle = "rgba(249, 115, 22, 0.85)"; ctx.stroke();
                 }
-                ctx.fillStyle = isHover ? "rgba(249, 115, 22, 0.9)" : "rgba(255, 255, 255, 0.7)";
+                ctx.fillStyle = isHover ? "rgba(249, 115, 22, 0.95)" : "rgba(255, 255, 255, 0.8)";
                 ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
                 ctx.fillText(cell.seat, (pTL.x + pTR.x + pBR.x + pBL.x)/4, (pTL.y + pTR.y + pBR.y + pBL.y)/4 + 3);
             });
@@ -291,7 +305,7 @@
 
         function startResponseTimer() {
             resetTimer(); isSessionActive = true;
-            document.getElementById('sessionStatus').textContent = "감지 중...";
+            document.getElementById('sessionStatus').textContent = "실시간 감지 중";
             document.getElementById('sessionStatus').className = "text-xs font-bold text-emerald-600";
             startTime = performance.now();
             timerInterval = setInterval(() => {
@@ -303,7 +317,7 @@
         function stopResponseTimer() {
             if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
             isSessionActive = false;
-            document.getElementById('sessionStatus').textContent = "정지됨";
+            document.getElementById('sessionStatus').textContent = "감지 정지됨";
             document.getElementById('sessionStatus').className = "text-xs font-bold text-rose-500";
         }
 
@@ -311,21 +325,17 @@
             stopResponseTimer(); elapsedMilliseconds = 0;
             document.getElementById('responseTimer').textContent = "00:00:00";
             document.getElementById('detectedCount').textContent = "0 / 5 명";
-            sessionRankings = [];
-            initGrid();
+            sessionRankings = []; initGrid();
         }
 
         function triggerAIHandRaise(student) {
             if (sessionRankings.length >= 5 || sessionRankings.some(r => r.student.id === student.id)) return;
             const rank = sessionRankings.length + 1;
             sessionRankings.push({ rank, student, time: elapsedMilliseconds });
-            
             const btn = document.getElementById(`seat-${student.id}`);
             btn.className = "seat-btn p-4 bg-orange-50 border-2 border-orange-500 rounded-2xl flex flex-col justify-between items-center relative h-24 ring-2 ring-orange-500/20";
             const badge = btn.querySelector('.rank-badge');
-            badge.textContent = `${rank}등 (${formatTime(elapsedMilliseconds)})`;
-            badge.classList.remove('hidden');
-            
+            badge.textContent = `${rank}등 (${formatTime(elapsedMilliseconds)})`; badge.classList.remove('hidden');
             updateRankingUI();
             if (sessionRankings.length === 5) stopResponseTimer();
             handRaisedStartTime = null;
@@ -334,7 +344,7 @@
         function updateRankingUI() {
             const list = document.getElementById('rankingList');
             document.getElementById('detectedCount').textContent = `${sessionRankings.length} / 5 명`;
-            if (!sessionRankings.length) { list.innerHTML = '<span class="text-xs text-slate-400 font-medium">질문 시작 후 카메라 앞에서 손을 들어 보세요.</span>'; return; }
+            if (!sessionRankings.length) { list.innerHTML = '<span class="text-xs text-slate-400 font-medium">질문 시작 후 손을 들어 보세요.</span>'; return; }
             list.innerHTML = '';
             sessionRankings.forEach(item => {
                 const div = document.createElement('div');
@@ -350,21 +360,27 @@
             selectedStudent = student;
             const record = sessionRankings.find(r => r.student.id === student.id);
             document.getElementById('targetStudent').value = `${student.seat}열 ${student.name} (${student.num}번) - [${record ? record.rank+'등' : '수동'}]`;
+            document.querySelectorAll('.seat-btn').forEach(b => b.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2'));
+            document.getElementById(`seat-${student.id}`).classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
         }
 
-        function selectTag(t) { selectedTagStr = t; }
+        function selectTag(t) {
+            selectedTagStr = t;
+            document.querySelectorAll('.tag-btn').forEach(b => b.className = "tag-btn bg-white text-slate-600 border border-slate-200/60 px-3 py-2 rounded-xl text-xs font-bold transition-all");
+            const btn = Array.from(document.querySelectorAll('.tag-btn')).find(b => b.textContent.includes(t));
+            if (btn) btn.className = `tag-btn px-3 py-2 rounded-xl text-xs font-bold text-white ${t==='의사소통'?'bg-emerald-600':t==='문제 해결력'?'bg-rose-600':t==='협업능력'?'bg-amber-600':'bg-indigo-600'}`;
+        }
 
         function saveActivityLog() {
             if (!selectedStudent || !selectedTagStr) { alert("학생과 태그를 선택해 주세요."); return; }
             const record = sessionRankings.find(r => r.student.id === selectedStudent.id);
-            logs.unshift({ id: Date.now(), studentName: selectedStudent.name, seat: selectedStudent.seat, num: selectedStudent.num, responseTime: record ? formatTime(record.time) : "수동", tag: selectedTagStr, memo: document.getElementById('observationMemo').value || "수업에 성실히 참여함." });
+            logs.unshift({ id: Date.now(), studentName: selectedStudent.name, seat: selectedStudent.seat, num: selectedStudent.num, responseTime: record ? formatTime(record.time) : "수동", tag: selectedTagStr, memo: document.getElementById('observationMemo').value || "성실히 참여함." });
             updateLogTable();
             document.getElementById('observationMemo').value = ""; selectedTagStr = "";
         }
 
         function updateLogTable() {
-            const body = document.getElementById('logTableBody');
-            document.getElementById('emptyRow').style.display = logs.length ? 'none' : 'table-row';
+            const body = document.getElementById('logTableBody'); document.getElementById('emptyRow').style.display = logs.length ? 'none' : 'table-row';
             Array.from(body.children).forEach(r => r.id !== 'emptyRow' && r.remove());
             logs.forEach(l => {
                 const tr = document.createElement('tr'); tr.className = "bg-white";
