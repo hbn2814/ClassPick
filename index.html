@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- MediaPipe Pose AI Engine CDNs -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
@@ -24,7 +22,7 @@
                 <h1 class="text-lg font-bold text-white flex items-center gap-2">
                     ClassPick <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-normal">Teacher Mode</span>
                 </h1>
-                <p class="text-xs text-gray-400">AI 손들기 인식 및 과정 중심 평가 시스템</p>
+                <p class="text-xs text-gray-400">AI 손들기 인식 및 과정 중심 평가 시스템 [1]</p>
             </div>
         </div>
         <div class="text-sm text-gray-400 flex items-center gap-4">
@@ -41,7 +39,7 @@
         <section class="lg:col-span-5 bg-gray-800 border border-gray-700/50 rounded-2xl p-4 flex flex-col gap-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-sm font-semibold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-video text-red-500"></i> AI 웹캠 실시간 감지 (교실 전면)
+                    <i class="fa-solid fa-video text-red-500"></i> AI 웹캠 실시간 감지 (교실 전면) [1]
                 </h2>
                 <span class="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded font-mono">
                     Local Device (MediaPipe Pose)
@@ -50,35 +48,40 @@
 
             <!-- WebCam & Skeleton Overlay -->
             <div class="relative aspect-video bg-black rounded-xl overflow-hidden border border-gray-900 flex items-center justify-center">
-                <!-- Real Camera Stream (Hidden but feeding to AI) -->
-                <video id="webcam" autoplay playsinline class="hidden"></video>
+                <!-- Standard HTML5 Video (Hidden, processed by Canvas) -->
+                <video id="webcam" autoplay playsinline muted class="hidden"></video>
                 <!-- Canvas drawing video frames and skeletal lines -->
                 <canvas id="skeletonCanvas" class="w-full h-full scale-x-[-1]"></canvas>
                 
                 <!-- Status Indicators -->
                 <div class="absolute top-3 left-3 bg-black/70 backdrop-blur text-xs text-gray-300 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-600 animate-ping"></span>
-                    <span>로컬 연산 중 (초상권 보호 및 무저장 소멸)</span>
+                    <span id="cameraPulse" class="w-2 h-2 rounded-full bg-gray-600"></span>
+                    <span id="cameraStatusLabel">대기 상태</span>
                 </div>
 
-                <!-- Camera Access Alert Overlay -->
-                <div id="cameraPrompt" class="absolute inset-0 bg-gray-950/90 flex flex-col items-center justify-center p-6 text-center">
-                    <i class="fa-solid fa-camera text-4xl text-indigo-400 mb-3 animate-bounce"></i>
-                    <p class="font-semibold text-white mb-1">카메라 권한이 필요합니다</p>
-                    <p class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서만 즉시 연산된 후 파기됩니다 [1].</p>
-                    <button onclick="startCamera()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
-                        카메라 연결 및 AI 가동
+                <!-- Camera Access / Loading Status Overlay -->
+                <div id="cameraPrompt" class="absolute inset-0 bg-gray-950/95 flex flex-col items-center justify-center p-6 text-center">
+                    <i id="promptIcon" class="fa-solid fa-camera text-4xl text-indigo-400 mb-3"></i>
+                    <p id="promptTitle" class="font-semibold text-white mb-1">AI 발표 인식기 가동</p>
+                    <p id="promptDesc" class="text-xs text-gray-400 max-w-xs mb-4">개인정보 보호를 위해 영상은 로컬 디바이스 내부에서 즉시 연산된 후 파기됩니다 [1].</p>
+                    <button id="startBtn" onclick="initAISystem()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
+                        카메라 권한 승인 및 시작
                     </button>
+                    <!-- Loading Progress Info (Hidden initially) -->
+                    <div id="loadingStatus" class="hidden mt-4 w-full max-w-xs bg-gray-900 rounded-lg p-3 text-left border border-gray-800">
+                        <div class="text-[11px] text-gray-400 space-y-1.5" id="statusLogs">
+                            <div><i class="fa-solid fa-circle-notch animate-spin text-indigo-400 mr-1.5"></i> 대기 중...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- AI Engine Rules Card -->
             <div class="bg-gray-900/50 rounded-xl p-3 border border-gray-700/30 text-xs text-gray-300 space-y-2">
-                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> AI 손들기 판정 알고리즘 스펙 [1]:</p>
+                <p class="font-semibold text-indigo-400"><i class="fa-solid fa-gears mr-1"></i> AI 손들기 판정 알고리즘 스펙 (업데이트):</p>
                 <ul class="list-disc list-inside space-y-1 text-gray-400 pl-1">
-                    <li>손목 위치가 코(Nose) 또는 귀(Ear) 좌표보다 높은 위치에 있어야 함</li>
-                    <li>팔꿈치 각도가 곧게 펴져 있는 상태 (<span class="text-amber-400">140° ~ 180°</span> 사이) [1]</li>
-                    <li>위 노이즈 필터 동작 조건을 연속 <span class="text-amber-400">0.5초</span> 이상 유지 시 발표자 지정 [1]</li>
+                    <li><span class="text-indigo-300 font-bold">손목(Wrist) 위치가 눈(Eye) 좌표보다 높은 위치</span>에 있을 때 감지</li>
+                    <li>불필요한 노이즈 행동 필터링을 위해 위 동작 조건을 연속 <span class="text-amber-400 font-bold">0.5초</span> 이상 유지 시 발표자 지정 [1]</li>
                 </ul>
             </div>
         </section>
@@ -86,11 +89,11 @@
         <!-- Right Column: Teacher Dashboard & Remote Controller -->
         <section class="lg:col-span-7 flex flex-col gap-6">
             
-            <!-- Mobile Control Panel / Quick Triggers -->
+            <!-- Mobile Control Panel / Quick Triggers [1] -->
             <div class="bg-gray-800 border border-gray-700/50 rounded-2xl p-5">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> 수업 제어 및 세션 기록
+                        <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> 수업 제어 및 세션 기록 [1]
                     </h2>
                     <div class="flex gap-2">
                         <button onclick="startResponseTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all">
@@ -120,9 +123,9 @@
                     </div>
                 </div>
 
-                <!-- Classroom Grid Area -->
+                <!-- Classroom Grid Area [1] -->
                 <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-1.5">
-                    <i class="fa-solid fa-grid-2"></i> 교실 자리배치 격자 (Grid Area)
+                    <i class="fa-solid fa-grid-2"></i> 교실 자리배치 격자 (Grid Area) [1]
                 </h3>
                 <div class="grid grid-cols-4 gap-3 mb-4" id="classroomGrid">
                     <!-- Javascript will dynamically inject classroom seats here -->
@@ -134,10 +137,10 @@
         <!-- Evaluation Tag & Data Logging Section (Bottom) -->
         <section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-800 border border-gray-700/50 rounded-2xl p-6">
             
-            <!-- Quick Tag Input Form -->
+            <!-- Quick Tag Input Form [1] -->
             <div>
                 <h3 class="text-md font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check text-indigo-400"></i> 역량 기반 즉각 평가 및 메모
+                    <i class="fa-solid fa-circle-check text-indigo-400"></i> 역량 기반 즉각 평가 및 메모 [1]
                 </h3>
                 
                 <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800 flex flex-col gap-4">
@@ -248,15 +251,33 @@
         
         let logs = [];
 
-        // Real MediaPipe AI Elements
+        // UI & Console DOMs
         const videoElement = document.getElementById('webcam');
         const canvasElement = document.getElementById('skeletonCanvas');
         const canvasCtx = canvasElement.getContext('2d');
-        let camera = null;
+        const statusLogs = document.getElementById('statusLogs');
 
-        // Variables to handle Hand Raising noise filter algorithm [1]
         let handRaisedStartTime = null;
-        const DURATION_THRESHOLD = 500; // 0.5초 (500ms) 동안 유지 조건 [1]
+        const DURATION_THRESHOLD = 500; // 0.5초(500ms) 유지 조건 [1]
+        let poseModel = null;
+        let isCameraStreamActive = false;
+
+        // Custom Console log helper
+        function addLog(text, type = 'info') {
+            const div = document.createElement('div');
+            if (type === 'error') {
+                div.innerHTML = `<span class="text-red-500 font-bold">❌ Error:</span> ${text}`;
+                console.error(text);
+            } else if (type === 'success') {
+                div.innerHTML = `<span class="text-green-400 font-bold">✔ Success:</span> ${text}`;
+                console.log(text);
+            } else {
+                div.innerHTML = `<span class="text-indigo-400">⏱ Log:</span> ${text}`;
+                console.log(text);
+            }
+            statusLogs.appendChild(div);
+            statusLogs.scrollTop = statusLogs.scrollHeight;
+        }
 
         // Initialize Classroom Grid [1]
         const gridContainer = document.getElementById('classroomGrid');
@@ -312,99 +333,172 @@
             handRaisedStartTime = null;
         }
 
-        // Start real camera and wire MediaPipe AI model
-        async function startCamera() {
-            document.getElementById('cameraPrompt').style.display = 'none';
+        // Camera and AI Initialization
+        async function initAISystem() {
+            document.getElementById('loadingStatus').classList.remove('hidden');
+            document.getElementById('startBtn').style.display = 'none';
+            statusLogs.innerHTML = '';
 
-            // MediaPipe Pose Engine Config
-            const pose = new Pose({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-            });
+            // Step 1: Camera Access
+            addLog("카메라 권한 획득 시작...");
+            try {
+                const constraints = {
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 360 },
+                        facingMode: "user"
+                    },
+                    audio: false
+                };
+                
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                videoElement.srcObject = stream;
+                await new Promise((resolve) => {
+                    videoElement.onloadedmetadata = () => {
+                        videoElement.play();
+                        resolve();
+                    };
+                });
+                
+                isCameraStreamActive = true;
+                addLog("카메라 하드웨어 연결 성공.", "success");
+            } catch (err) {
+                addLog(`카메라 연동 실패: ${err.name}`, "error");
+                document.getElementById('promptIcon').className = "fa-solid fa-triangle-exclamation text-4xl text-red-500 mb-3 animate-pulse";
+                document.getElementById('promptTitle').textContent = "카메라 연동 불가";
+                document.getElementById('promptDesc').innerHTML = `
+                    브라우저 주소창 왼쪽의 <b>🔒 자물쇠 아이콘</b>을 눌러 카메라 권한을 '허용'한 후 웹페이지를 새로고침해 주십시오.
+                `;
+                return;
+            }
 
-            pose.setOptions({
-                modelComplexity: 1,
-                smoothLandmarks: true,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
-            });
+            // Step 2: Load Pose Engine
+            addLog("MediaPipe Pose AI 모델 로딩 중...");
+            try {
+                poseModel = new Pose({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+                });
 
-            pose.onResults(onPoseResults);
+                poseModel.setOptions({
+                    modelComplexity: 1,
+                    smoothLandmarks: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
 
-            // Access Webcam
-            camera = new Camera(videoElement, {
-                onFrame: async () => {
-                    await pose.send({ image: videoElement });
-                },
-                width: 640,
-                height: 360
-            });
-            camera.start();
+                poseModel.onResults(onPoseResults);
+                addLog("Pose AI 머신러닝 엔진 로딩 완료.", "success");
+            } catch (err) {
+                addLog(`AI 모델 로드 오류: ${err.message}`, "error");
+                return;
+            }
+
+            // Step 3: Start Loop
+            addLog("실시간 추적 프레임 루프 가동...", "success");
+            document.getElementById('cameraPulse').className = "w-2 h-2 rounded-full bg-red-600 animate-ping";
+            document.getElementById('cameraStatusLabel').textContent = "실시간 감지 작동 중";
+            
+            setTimeout(() => {
+                document.getElementById('cameraPrompt').style.display = 'none';
+                startResponseTimer();
+            }, 1000);
+
+            requestAnimationFrame(processVideoFrame);
         }
 
-        // Calculate Angle between three joints ( Shoulder - Elbow - Wrist ) [1]
-        function calculateAngle(shoulder, elbow, wrist) {
-            const radians = Math.atan2(wrist.y - elbow.y, wrist.x - elbow.x) - Math.atan2(shoulder.y - elbow.y, shoulder.x - elbow.x);
-            let angle = Math.abs(radians * 180.0 / Math.PI);
-            if (angle > 180.0) {
-                angle = 360.0 - angle;
+        async function processVideoFrame() {
+            if (isCameraStreamActive && !videoElement.paused && !videoElement.ended) {
+                try {
+                    await poseModel.send({ image: videoElement });
+                } catch (err) {}
             }
-            return angle;
+            requestAnimationFrame(processVideoFrame);
+        }
+
+        // Custom Skeletal drawing tools
+        function drawBone(ctx, p1, p2, width, color) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x * canvasElement.width, p1.y * canvasElement.height);
+            ctx.lineTo(p2.x * canvasElement.width, p2.y * canvasElement.height);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke();
+        }
+
+        function drawJoint(ctx, point, radius, color) {
+            ctx.beginPath();
+            ctx.arc(point.x * canvasElement.width, point.y * canvasElement.height, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
         }
 
         // MediaPipe results processing loop
         function onPoseResults(results) {
-            // Resize Canvas to Match video source
-            canvasElement.width = results.image.width;
-            canvasElement.height = results.image.height;
+            canvasElement.width = videoElement.videoWidth || 640;
+            canvasElement.height = videoElement.videoHeight || 360;
 
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
             
-            // Draw original camera view on canvas first
+            // Mirror flip & Draw original webcam capture
             canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
             if (results.poseLandmarks) {
-                // Draw AI Skeletal lines
-                drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#6366f1', lineWidth: 4 });
-                drawLandmarks(canvasCtx, results.poseLandmarks, { color: '#f59e0b', lineWidth: 2, radius: 5 });
+                const landmarks = results.poseLandmarks;
 
-                // Key Landmark Indices: 
-                // Nose (0), L_Ear (7), R_Ear (8), L_Shoulder (11), R_Shoulder (12), L_Elbow (13), R_Elbow (14), L_Wrist (15), R_Wrist (16)
-                const nose = results.poseLandmarks[0];
-                const leftEar = results.poseLandmarks[7];
-                const rightEar = results.poseLandmarks[8];
+                // 2번: 왼쪽 눈 (Left Eye), 5번: 오른쪽 눈 (Right Eye) 추출
+                const leftEye = landmarks[2];
+                const rightEye = landmarks[5];
 
-                const leftShoulder = results.poseLandmarks[11];
-                const rightShoulder = results.poseLandmarks[12];
-                const leftElbow = results.poseLandmarks[13];
-                const rightElbow = results.poseLandmarks[14];
-                const leftWrist = results.poseLandmarks[15];
-                const rightWrist = results.poseLandmarks[16];
+                // 15번: 왼쪽 손목 (Left Wrist), 16번: 오른쪽 손목 (Right Wrist) 추출
+                const leftWrist = landmarks[15];
+                const rightWrist = landmarks[16];
 
-                // Calculate Arm Angles [1]
-                const leftElbowAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
-                const rightElbowAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
+                // 뼈대 및 관절 드로잉용 참조 포인트들
+                const nose = landmarks[0];
+                const leftEar = landmarks[7];
+                const rightEar = landmarks[8];
+                const leftShoulder = landmarks[11];
+                const rightShoulder = landmarks[12];
+                const leftElbow = landmarks[13];
+                const rightElbow = landmarks[14];
 
-                // Hand Raise Conditions checking [1]:
-                // 1. Wrist is higher than Nose/Ear (In canvas coordinate system, smaller Y means higher location)
-                // 2. Elbow Angle is between 140 and 180 degrees [1]
-                const isLeftHandRaised = (leftWrist.y < nose.y || leftWrist.y < leftEar.y) && (leftElbowAngle >= 140 && leftElbowAngle <= 180);
-                const isRightHandRaised = (rightWrist.y < nose.y || rightWrist.y < rightEar.y) && (rightElbowAngle >= 140 && rightElbowAngle <= 180);
+                // 머리 및 팔 프레임 그리기
+                drawBone(canvasCtx, leftShoulder, rightShoulder, 4, "#6366f1");
+                drawBone(canvasCtx, leftShoulder, leftElbow, 4, "#6366f1");
+                drawBone(canvasCtx, leftElbow, leftWrist, 4, "#6366f1");
+                drawBone(canvasCtx, rightShoulder, rightElbow, 4, "#6366f1");
+                drawBone(canvasCtx, rightElbow, rightWrist, 4, "#6366f1");
+
+                // 관절 노드 시각화 (눈 포인트도 포함)
+                const criticalPoints = [nose, leftEye, rightEye, leftEar, rightEar, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist];
+                criticalPoints.forEach(p => drawJoint(canvasCtx, p, 5, "#f59e0b"));
+
+                // 핵심 알고리즘 수정 [1]: "손목 위치(Wrist Y)가 각각의 눈 위치(Eye Y)보다 높을(작을) 때"를 기준으로 판단
+                const isLeftHandRaised = leftWrist.y < leftEye.y;
+                const isRightHandRaised = rightWrist.y < rightEye.y;
 
                 if (isSessionActive && (isLeftHandRaised || isRightHandRaised)) {
                     if (handRaisedStartTime === null) {
                         handRaisedStartTime = performance.now();
                     } else {
                         const duration = performance.now() - handRaisedStartTime;
-                        if (duration >= DURATION_THRESHOLD) { // 0.5초 유효 조건 도달 [1]
+                        const percent = Math.min((duration / DURATION_THRESHOLD) * 100, 100);
+                        
+                        // 0.5초(500ms) 유지 조건 체크 [1]
+                        if (duration >= DURATION_THRESHOLD) {
                             triggerAIHandRaise();
                         }
-                    }
 
-                    // Visual feedback on raising arm inside real-time Canvas
-                    canvasCtx.fillStyle = '#10B981';
-                    canvasCtx.font = "bold 20px sans-serif";
-                    canvasCtx.fillText("손들기 감지 중 (유지하는 중...)", 30, 50);
+                        // 화면상의 감지 진행 정보 바 표기
+                        canvasCtx.fillStyle = '#10B981';
+                        canvasCtx.fillRect(10, 10, percent * 2.5, 12);
+                        canvasCtx.strokeStyle = '#ffffff';
+                        canvasCtx.strokeRect(10, 10, 250, 12);
+                        canvasCtx.fillStyle = '#ffffff';
+                        canvasCtx.font = "bold 11px sans-serif";
+                        canvasCtx.fillText(`손들기 인식 중 ... ${Math.floor(percent)}%`, 15, 20);
+                    }
                 } else {
                     handRaisedStartTime = null;
                 }
@@ -412,18 +506,17 @@
             canvasCtx.restore();
         }
 
-        // Executed once the hand raise is verified after 0.5s [1]
+        // AI 발표자 선정 트리거
         function triggerAIHandRaise() {
             stopResponseTimer();
             document.getElementById('responseTimer').className = "text-lg font-mono font-bold text-amber-400 animate-pulse";
             document.getElementById('sessionStatus').textContent = "감지 완료!";
             document.getElementById('sessionStatus').className = "text-sm font-bold text-amber-400";
 
-            // Trigger random classroom student selection mimicking multi-pose coordinate mapping [1]
+            // 임의의 학생 매핑 후 지목 시뮬레이션 [1]
             const randIndex = Math.floor(Math.random() * students.length);
             const target = students[randIndex];
             
-            // Highlight the seat UI
             document.querySelectorAll('.seat-btn').forEach(b => {
                 b.classList.remove('border-amber-400', 'bg-amber-400/20');
                 b.querySelector('.hand-indicator').classList.add('hidden');
@@ -432,7 +525,6 @@
             seatBtn.classList.add('border-amber-400', 'bg-amber-400/20');
             seatBtn.querySelector('.hand-indicator').classList.remove('hidden');
 
-            // Select this student for instant evaluation
             document.getElementById('detectedStudentName').textContent = target.name;
             selectStudentFromGrid(target);
         }
@@ -441,7 +533,6 @@
             selectedStudent = student;
             document.getElementById('targetStudent').value = `${student.seat} ${student.name} (${student.num}번)`;
             
-            // Highlight selected student on grid
             document.querySelectorAll('.seat-btn').forEach(b => {
                 b.classList.remove('ring-2', 'ring-indigo-500');
             });
@@ -451,7 +542,6 @@
         function selectTag(tagName) {
             selectedTagStr = tagName;
             
-            // Style selected tag button
             document.querySelectorAll('.tag-btn').forEach(btn => {
                 btn.classList.remove('bg-indigo-600', 'bg-emerald-600', 'bg-rose-600', 'bg-amber-600', 'text-white');
                 btn.classList.add('bg-gray-800', 'text-gray-300');
@@ -468,7 +558,7 @@
             }
         }
 
-        // Save data to table simulating Firebase synchronization [1]
+        // 로그 기록 동기화 시뮬레이션 [1]
         function saveActivityLog() {
             if (!selectedStudent) {
                 alert("기록을 남기기 전, AI 트리거 작동이나 교실 자리를 눌러 학생을 지목해 주세요.");
@@ -490,10 +580,10 @@
                 memo: memoInput.value || "수업 질문에 대해 적극적으로 손을 들고 의견을 제시함."
             };
 
-            logs.unshift(newLog); // Prepend to show newest logs on top
+            logs.unshift(newLog);
             updateLogTable();
             
-            // Clean up States
+            // 초기화
             memoInput.value = "";
             selectedTagStr = "";
             document.querySelectorAll('.tag-btn').forEach(btn => {
@@ -529,7 +619,6 @@
 
             emptyRow.style.display = 'none';
             
-            // Clear existing data rows
             Array.from(tableBody.children).forEach(row => {
                 if (row.id !== 'emptyRow') row.remove();
             });
@@ -562,14 +651,13 @@
             });
         }
 
-        // Export Function (CSV Format) for Spreadsheet applications [1]
         function exportToCSV() {
             if (logs.length === 0) {
                 alert("출력할 데이터 로그가 없습니다.");
                 return;
             }
 
-            let csvContent = "\uFEFF"; // UTF-8 BOM representation for Excel
+            let csvContent = "\uFEFF"; // UTF-8 BOM
             csvContent += "학생 이름,자리 코드,번호,반응 시간,역량 평가 태그,관찰 메모\n";
 
             logs.forEach(log => {
